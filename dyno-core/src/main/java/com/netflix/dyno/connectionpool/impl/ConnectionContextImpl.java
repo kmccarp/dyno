@@ -22,7 +22,7 @@ import com.netflix.dyno.connectionpool.ConnectionContext;
 
 public class ConnectionContextImpl implements ConnectionContext {
 
-    private final ConcurrentHashMap<String, Object> context = new ConcurrentHashMap<String, Object>();
+    private final ConcurrentHashMap<String, Object> context = new ConcurrentHashMap<>();
 
     @Override
     public void setMetadata(String key, Object obj) {

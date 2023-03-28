@@ -71,16 +71,16 @@ public class ExpireHashTest {
     public void testBasicCommands() {
         final String expireHashKey = "expireHashKey";
 
-        Assert.assertEquals(new Long(1L), client.ehset(expireHashKey, "hello", "world", 900));
-        Assert.assertEquals(new Long(0L), client.ehsetnx(expireHashKey, "hello", "world", 900));
+        Assert.assertEquals(Long.valueOf(1L), client.ehset(expireHashKey, "hello", "world", 900));
+        Assert.assertEquals(Long.valueOf(0L), client.ehsetnx(expireHashKey, "hello", "world", 900));
         Assert.assertEquals("world", client.ehget(expireHashKey, "hello"));
         Assert.assertTrue(client.ehexists(expireHashKey, "hello"));
-        Assert.assertEquals(new Long(1L), client.ehdel(expireHashKey, "hello"));
+        Assert.assertEquals(Long.valueOf(1L), client.ehdel(expireHashKey, "hello"));
         Assert.assertNull(client.ehget(expireHashKey, "hello"));
 
         // verify metadata explicitly
         Set<String> mFields = client.zrangeByScore(client.ehashMetadataKey(expireHashKey), 0, Integer.MAX_VALUE);
-        Assert.assertEquals(Collections.EMPTY_SET, mFields);
+        Assert.assertEquals(Collections.emptySet(), mFields);
     }
 
     @Test
@@ -92,9 +92,9 @@ public class ExpireHashTest {
 
         long startTime = System.currentTimeMillis();
 
-        Assert.assertEquals(new Long(1L), client.ehset(expireHashKey, "hello", "world", veryShortTimeout));
-        Assert.assertEquals(new Long(1L), client.ehset(expireHashKey, "alice", "bob", shortTimeout));
-        Assert.assertEquals(new Long(1L), client.ehset(expireHashKey, "foo", "bar", longTimeout));
+        Assert.assertEquals(Long.valueOf(1L), client.ehset(expireHashKey, "hello", "world", veryShortTimeout));
+        Assert.assertEquals(Long.valueOf(1L), client.ehset(expireHashKey, "alice", "bob", shortTimeout));
+        Assert.assertEquals(Long.valueOf(1L), client.ehset(expireHashKey, "foo", "bar", longTimeout));
 
         Assert.assertEquals("world", client.ehget(expireHashKey, "hello"));
         Assert.assertEquals("bob", client.ehget(expireHashKey, "alice"));
@@ -112,16 +112,16 @@ public class ExpireHashTest {
                 client.ehttl(expireHashKey, "foo") == (timeRemainingInSecs + 1));
 
         // check timeout on expirehash
-        Assert.assertEquals(new Long(-1), client.ehttl(expireHashKey));
+        Assert.assertEquals(Long.valueOf(-1), client.ehttl(expireHashKey));
 
-        Assert.assertEquals(new Long(1), client.ehexpire(expireHashKey, 20));
+        Assert.assertEquals(Long.valueOf(1), client.ehexpire(expireHashKey, 20));
 
         // check the ttl values
         Assert.assertTrue(client.ehttl(expireHashKey) == 20 ||
                 client.ehttl(expireHashKey) == (20 - 1));
 
-        Assert.assertEquals(new Long(1), client.ehpersist(expireHashKey));
-        Assert.assertEquals(new Long(-1), client.ehttl(expireHashKey));
+        Assert.assertEquals(Long.valueOf(1), client.ehpersist(expireHashKey));
+        Assert.assertEquals(Long.valueOf(-1), client.ehttl(expireHashKey));
 
         // verify metadata explicitly
         Set<String> mFields = client.zrangeByScore(client.ehashMetadataKey(expireHashKey), 0, Integer.MAX_VALUE);
@@ -166,7 +166,7 @@ public class ExpireHashTest {
         Assert.assertTrue(allKeys.containsAll(fields.keySet()));
         Assert.assertTrue(allVals.containsAll(fields.values().stream().map(Pair::getLeft).collect(Collectors.toSet())));
 
-        Assert.assertEquals(new Long(0), client.ehrenamenx(expireHashKey, expireHashKey));
+        Assert.assertEquals(Long.valueOf(0), client.ehrenamenx(expireHashKey, expireHashKey));
         Assert.assertEquals("OK", client.ehrename(expireHashKey, expireHashKey + "_new"));
         expireHashKey = expireHashKey + "_new";
 
