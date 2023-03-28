@@ -19,7 +19,6 @@ import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.exception.DynoException;
 import com.netflix.dyno.connectionpool.exception.TimeoutException;
 import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils;
-import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils.Predicate;
 import com.netflix.dyno.connectionpool.impl.utils.IOUtilities;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -130,7 +129,7 @@ public class HttpEndpointBasedTokenMapSupplier extends AbstractTokenMapSupplier 
 
         HttpResponse response = client.execute(get);
         int statusCode = response.getStatusLine().getStatusCode();
-        if (!(statusCode == 200)) {
+        if (statusCode != 200) {
             Logger.error("Got non 200 status code from " + url);
             return null;
         }
@@ -156,13 +155,7 @@ public class HttpEndpointBasedTokenMapSupplier extends AbstractTokenMapSupplier 
     public Host getRandomHost(Set<Host> activeHosts) {
         Random random = new Random();
 
-        List<Host> hostsUp = new ArrayList<Host>(CollectionUtils.filter(activeHosts, new Predicate<Host>() {
-
-            @Override
-            public boolean apply(Host x) {
-                return x.isUp();
-            }
-        }));
+        List<Host> hostsUp = new ArrayList<>(CollectionUtils.filter(activeHosts, Host::isUp));
 
         return hostsUp.get(random.nextInt(hostsUp.size()));
     }

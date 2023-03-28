@@ -15,7 +15,7 @@
  */
 package com.netflix.dyno.connectionpool.impl.hash;
 
-public class UnsignedIntsUtils {
+public final class UnsignedIntsUtils {
 
     static final long INT_MASK = 0xffffffffL;
 

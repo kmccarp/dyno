@@ -15,7 +15,6 @@
  */
 package com.netflix.dyno.connectionpool.impl.utils;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -47,19 +46,15 @@ public class RateLimitUtilTest {
 
         for (int i = 0; i < nThreads; i++) {
 
-            thPool.submit(new Callable<Void>() {
-
-                @Override
-                public Void call() throws Exception {
-                    barrier.await();
-                    while (!stop.get()) {
-                        if (rateLimiter.acquire()) {
-                            counter.incrementAndGet();
-                        }
+            thPool.submit(() -> {
+                barrier.await();
+                while (!stop.get()) {
+                    if (rateLimiter.acquire()) {
+                        counter.incrementAndGet();
                     }
-                    latch.countDown();
-                    return null;
                 }
+                latch.countDown();
+                return null;
             });
         }
 
@@ -73,7 +68,7 @@ public class RateLimitUtilTest {
 
         long duration = end.get() - start;
         long totalCount = counter.get();
-        double resultRps = ((double) (totalCount) / ((double) duration / 1000.0));
+        double resultRps = (double) (totalCount) / ((double) duration / 1000.0);
         System.out.println("Total Count : " + totalCount + ", duration:  " + duration + ", result rps: " + resultRps);
 
         double percentageDiff = Math.abs(expectedRps - resultRps) * 100 / resultRps;

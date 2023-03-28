@@ -29,9 +29,9 @@ import com.netflix.dyno.connectionpool.OperationMonitor;
  */
 public class LastOperationMonitor implements OperationMonitor {
 
-    private final ConcurrentHashMap<String, Long> latestTimings = new ConcurrentHashMap<String, Long>();
-    private final ConcurrentHashMap<String, AtomicInteger> opCounters = new ConcurrentHashMap<String, AtomicInteger>();
-    private final ConcurrentHashMap<String, AtomicInteger> opFailureCounters = new ConcurrentHashMap<String, AtomicInteger>();
+    private final ConcurrentHashMap<String, Long> latestTimings = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, AtomicInteger> opCounters = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, AtomicInteger> opFailureCounters = new ConcurrentHashMap<>();
 
     @Override
     public void recordLatency(String opName, long duration, TimeUnit unit) {

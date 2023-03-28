@@ -26,7 +26,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.net.ssl.SSLContext;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import static com.netflix.dyno.jedis.utils.SSLContextUtil.createAndInitSSLContext;
 
@@ -44,13 +47,7 @@ public class JedisConnectionFactoryIntegrationTest {
 
     private final Host localHost = new HostBuilder().setHostname("localhost").setPort(port).setRack(rack).setStatus(Host.Status.Up).createHost();
 
-    private final HostSupplier localHostSupplier = new HostSupplier() {
-
-        @Override
-        public List<Host> getHosts() {
-            return Collections.singletonList(localHost);
-        }
-    };
+    private final HostSupplier localHostSupplier = () -> Collections.singletonList(localHost);
 
     private final TokenMapSupplier supplier = new TokenMapSupplier() {
 

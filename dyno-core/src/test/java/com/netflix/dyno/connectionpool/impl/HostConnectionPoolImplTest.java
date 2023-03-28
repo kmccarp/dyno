@@ -57,10 +57,10 @@ public class HostConnectionPoolImplTest {
     private static ExecutorService threadPool;
     private static int numWorkers = 10;
 
-    private static class TestConnection implements Connection<TestClient> {
+    private static final class TestConnection implements Connection<TestClient> {
 
         private DynoConnectException ex;
-        private HostConnectionPool<TestClient> myPool;
+        private final HostConnectionPool<TestClient> myPool;
 
         private TestConnection(HostConnectionPool<TestClient> pool) {
             myPool = pool;
@@ -165,7 +165,7 @@ public class HostConnectionPoolImplTest {
         final BasicResult result = new BasicResult();
         final TestControl control = new TestControl(4);
 
-        pool = new HostConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new HostConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         int numConns = pool.primeConnections();
 
         for (int i = 0; i < 4; i++) {
@@ -196,7 +196,7 @@ public class HostConnectionPoolImplTest {
     @Test
     public void testPoolTimeouts() throws Exception {
 
-        pool = new HostConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new HostConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         int numConns = pool.primeConnections();
 
         final BasicResult result = new BasicResult();
@@ -232,7 +232,7 @@ public class HostConnectionPoolImplTest {
     @Test
     public void testMarkHostAsDown() throws Exception {
 
-        pool = new HostConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new HostConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         int numConns = pool.primeConnections();
 
         final BasicResult result = new BasicResult();
@@ -267,7 +267,7 @@ public class HostConnectionPoolImplTest {
         Assert.assertTrue(result.failureCount.get() > 0);
     }
 
-    private class BasicWorker implements Callable<Void> {
+    private final class BasicWorker implements Callable<Void> {
 
         private final BasicResult result;
         private final TestControl control;
@@ -316,7 +316,7 @@ public class HostConnectionPoolImplTest {
         }
     }
 
-    private class TestControl {
+    private final class TestControl {
 
         private final AtomicBoolean stop = new AtomicBoolean(false);
         private final CountDownLatch latch;
@@ -342,13 +342,13 @@ public class HostConnectionPoolImplTest {
         }
     }
 
-    private class BasicResult {
+    private final class BasicResult {
 
         private final AtomicInteger opCount = new AtomicInteger(0);
         private final AtomicInteger successCount = new AtomicInteger(0);
         private final AtomicInteger failureCount = new AtomicInteger(0);
 
-        private AtomicBoolean lastSuccess = new AtomicBoolean(false);
+        private final AtomicBoolean lastSuccess = new AtomicBoolean(false);
 
         private BasicResult() {
         }
