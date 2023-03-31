@@ -26,7 +26,7 @@ import com.netflix.dyno.connectionpool.RetryPolicy;
  */
 public class RunOnce implements RetryPolicy {
 
-    private AtomicInteger attempts = new AtomicInteger(0);
+    private final AtomicInteger attempts = new AtomicInteger(0);
 
     @Override
     public void begin() {

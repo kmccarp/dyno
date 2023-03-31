@@ -72,7 +72,7 @@ public class DynoJedisCounter implements DynoCounter {
 
     public Long get() {
         Long result = 0L;
-        ArrayList<String> values = new ArrayList<String>(generatedKeys.size());
+        ArrayList<String> values = new ArrayList<>(generatedKeys.size());
         for (String key : generatedKeys) {
             String val = client.get(key);
             if (val != null) {
@@ -103,18 +103,18 @@ public class DynoJedisCounter implements DynoCounter {
         }
 
         // Retrieve the tokens for the cluster
-        final List<String> racks = new ArrayList<String>(topology.keySet());
-        final Set<Long> tokens = new HashSet<Long>();
+        final List<String> racks = new ArrayList<>(topology.keySet());
+        final Set<Long> tokens = new HashSet<>();
 
         for (TokenPoolTopology.TokenStatus status : topology.get(racks.get(0))) {
             tokens.add(status.getToken());
         }
 
-        final List<String> generatedKeys = new ArrayList<String>(tokens.size());
+        final List<String> generatedKeys = new ArrayList<>(tokens.size());
 
         // Find a key corresponding to each token
         int i = 0;
-        while (tokens.size() > 0 && i++ < MAX_ITERATIONS) {
+        while (!tokens.isEmpty() && i++ < MAX_ITERATIONS) {
             Long token = view.getTokenForKey(key + "_" + i);
             if (tokens.contains(token)) {
                 if (tokens.remove(token)) {
@@ -131,9 +131,9 @@ public class DynoJedisCounter implements DynoCounter {
     int randomIntFrom0toN() {
         // XORShift instead of Math.random http://javamex.com/tutorials/random_numbers/xorshift.shtml
         long x = System.nanoTime();
-        x ^= (x << 21);
-        x ^= (x >>> 35);
-        x ^= (x << 4);
+        x ^= x << 21;
+        x ^= x >>> 35;
+        x ^= x << 4;
         return Math.abs((int) x % generatedKeys.size());
     }
 

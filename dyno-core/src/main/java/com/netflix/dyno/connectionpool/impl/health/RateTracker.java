@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +37,7 @@ import com.netflix.dyno.connectionpool.exception.DynoException;
  */
 public class RateTracker {
 
-    private final AtomicReference<BucketCreator> bucketCreateLock = new AtomicReference<BucketCreator>(null);
+    private final AtomicReference<BucketCreator> bucketCreateLock = new AtomicReference<>(null);
     private final AtomicInteger wonLock = new AtomicInteger(0);
 
     final RollingWindow rWindow;
@@ -114,11 +113,11 @@ public class RateTracker {
         return wonLock.get();
     }
 
-    class RollingWindow {
+    final class RollingWindow {
 
         private final int windowSize;
 
-        private final LinkedBlockingDeque<Bucket> queue = new LinkedBlockingDeque<Bucket>();
+        private final LinkedBlockingDeque<Bucket> queue = new LinkedBlockingDeque<>();
         private final AtomicInteger bucketCreateCount = new AtomicInteger(0);
 
         private RollingWindow(int wSize) {
@@ -148,7 +147,7 @@ public class RateTracker {
 
         private List<Bucket> getBuckets(int lookback) {
 
-            List<Bucket> list = new ArrayList<Bucket>();
+            List<Bucket> list = new ArrayList<>();
             int count = 0;
             Iterator<Bucket> iter = queue.iterator();
 
@@ -161,7 +160,7 @@ public class RateTracker {
 
         private List<Bucket> getAllBuckets() {
 
-            List<Bucket> list = new ArrayList<Bucket>();
+            List<Bucket> list = new ArrayList<>();
             Iterator<Bucket> iter = queue.iterator();
 
             while (iter.hasNext()) {
@@ -233,15 +232,21 @@ public class RateTracker {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + new Long(lastTimestamp.get()).intValue();
+            result = prime * result + Long.valueOf(lastTimestamp.get()).intValue();
             return result;
         }
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
 
             Bucket other = (Bucket) obj;
             return this.lastTimestamp.get() == other.lastTimestamp.get();
@@ -252,7 +257,7 @@ public class RateTracker {
         }
     }
 
-    private class BucketCreator {
+    private final class BucketCreator {
 
         private final String id = UUID.randomUUID().toString();
         private final long timestamp;
@@ -261,14 +266,9 @@ public class RateTracker {
         private BucketCreator(long time) {
             this.timestamp = time;
 
-            this.futureBucket = new FutureTask<Bucket>(new Callable<Bucket>() {
-
-                @Override
-                public Bucket call() throws Exception {
-                    rWindow.syncToNewWindow(timestamp);
-                    return rWindow.firstBucket();
-                }
-
+            this.futureBucket = new FutureTask<>(() -> {
+                rWindow.syncToNewWindow(timestamp);
+                return rWindow.firstBucket();
             });
         }
 
@@ -283,13 +283,19 @@ public class RateTracker {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null) return false;
-            if (getClass() != obj.getClass()) return false;
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
             BucketCreator other = (BucketCreator) obj;
             boolean equals = true;
             equals &= (id != null) ? id.equals(other.id) : other.id == null;
-            equals &= (timestamp == other.timestamp);
+            equals &= timestamp == other.timestamp;
             return equals;
         }
 

@@ -96,12 +96,11 @@ public class ElasticConnectionPoolConfigurationPublisher implements ConnectionPo
         }
 
         // jar version
-        Set<String> jars = new HashSet<String>() {{
-            add("dyno-core");
-            add("dyno-contrib");
-            add("dyno-jedis");
-            add("dyno-reddison");
-        }};
+        Set<String> jars = new HashSet<>();
+        jars.add("dyno-core");
+        jars.add("dyno-contrib");
+        jars.add("dyno-jedis");
+        jars.add("dyno-reddison");
 
         json.put("Versions", new JSONObject(getLibraryVersion(this.getClass(), jars)));
 
@@ -155,12 +154,12 @@ public class ElasticConnectionPoolConfigurationPublisher implements ConnectionPo
      */
     Map<String, String> getLibraryVersion(Class<?> classLoadedWithURLClassLoader, Set<String> libraryNames) {
         ClassLoader cl = classLoadedWithURLClassLoader.getClassLoader();
-        Map<String, String> libraryVersionMapping = new HashMap<String, String>();
+        Map<String, String> libraryVersionMapping = new HashMap<>();
 
         if (cl instanceof URLClassLoader) {
             @SuppressWarnings("resource")
             URLClassLoader uCl = (URLClassLoader) cl;
-            URL urls[] = uCl.getURLs();
+            URL[] urls = uCl.getURLs();
 
             for (URL url : urls) {
                 String fullNameWithVersion = url.toString().substring(url.toString().lastIndexOf('/'));
@@ -181,7 +180,7 @@ public class ElasticConnectionPoolConfigurationPublisher implements ConnectionPo
     }
 
     Map<String, String> getLibraryVersion(Class<?> classLoadedWithURLClassLoader, String... libraryNames) {
-        return getLibraryVersion(classLoadedWithURLClassLoader, new HashSet<String>(Arrays.asList(libraryNames)));
+        return getLibraryVersion(classLoadedWithURLClassLoader, new HashSet<>(Arrays.asList(libraryNames)));
     }
 
     int findVersionStartIndex(String nameWithVersion) {

@@ -18,7 +18,6 @@ package com.netflix.dyno.recipes.counter;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -37,15 +36,10 @@ public class DynoJedisBatchCounter implements DynoCounter {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicLong localCounter;
-    private final AtomicReference<DynoJedisCounter> counter = new AtomicReference<DynoJedisCounter>(null);
+    private final AtomicReference<DynoJedisCounter> counter = new AtomicReference<>(null);
     private final Long frequencyInMillis;
 
-    private final ScheduledExecutorService counterThreadPool = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "DynoJedisBatchCounter-Poller");
-        }
-    });
+    private final ScheduledExecutorService counterThreadPool = Executors.newScheduledThreadPool(1, r -> new Thread(r, "DynoJedisBatchCounter-Poller"));
 
     public DynoJedisBatchCounter(String key, DynoJedisClient client, Long frequencyInMillis) {
         this.counter.compareAndSet(null, new DynoJedisCounter(key, client));
@@ -58,12 +52,9 @@ public class DynoJedisBatchCounter implements DynoCounter {
         if (initialized.compareAndSet(false, true)) {
             counter.get().initialize();
 
-            counterThreadPool.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    if (localCounter.get() > 0) {
-                        counter.get().incrBy(localCounter.getAndSet(0));
-                    }
+            counterThreadPool.scheduleAtFixedRate(() -> {
+                if (localCounter.get() > 0) {
+                    counter.get().incrBy(localCounter.getAndSet(0));
                 }
             }, 1000, frequencyInMillis, TimeUnit.MILLISECONDS);
         }

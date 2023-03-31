@@ -22,7 +22,6 @@ import io.netty.util.concurrent.Future;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,8 +41,8 @@ public class RedissonDemo {
     private final ExecutorService threadPool;
     private final AtomicBoolean stop;
 
-    RedisClient client = null;
-    RedisAsyncConnection<String, String> rConn = null;
+    RedisClient client;
+    RedisAsyncConnection<String, String> rConn;
 
     RedissonDemo(int nThreads, int eLoop) {
         numThreads = nThreads;
@@ -65,7 +64,7 @@ public class RedissonDemo {
         System.out.println("\n\nTHREADS: " + numThreads + " LOOP: " + eventLoop);
 
         final String value1 = "dcfa7d0973834e5c9f480b65de19d684dcfa7d097383dcfa7d0973834e5c9f480b65de19d684dcfa7d097383dcfa7d0973834e5c9f480b65de19d684dcfa7d097383dcfa7d0973834e5c9f480b65de19d684dcfa7d097383";
-        final String StaticValue = value1 + value1 + value1 + value1 + value1;
+        final String staticValue = value1 + value1 + value1 + value1 + value1;
 
         try {
 
@@ -86,7 +85,7 @@ public class RedissonDemo {
             final AtomicInteger total = new AtomicInteger(0);
             final AtomicInteger prev = new AtomicInteger(0);
 
-            final List<String> list = new ArrayList<String>();
+            final List<String> list = new ArrayList<>();
             for (int i = 0; i < 10000; i++) {
                 list.add("T" + i);
             }
@@ -95,47 +94,38 @@ public class RedissonDemo {
             final Random random = new Random();
 
             for (int i = 0; i < numThreads; i++) {
-                threadPool.submit(new Callable<Void>() {
+                threadPool.submit(() -> {
 
-                    @Override
-                    public Void call() throws Exception {
+                    while (!stop.get() && !Thread.currentThread().isInterrupted()) {
 
-                        while (!stop.get() && !Thread.currentThread().isInterrupted()) {
-
-                            int index = random.nextInt(size);
-                            try {
-                                asyncConn.get(list.get(index)).get(1000, TimeUnit.MILLISECONDS);
-                            } catch (Exception e) {
-                                //e.printStackTrace();
-                                break;
-                            }
-                            total.incrementAndGet();
+                        int index = random.nextInt(size);
+                        try {
+                            asyncConn.get(list.get(index)).get(1000, TimeUnit.MILLISECONDS);
+                        } catch (Exception e) {
+                            //e.printStackTrace();
+                            break;
                         }
-                        return null;
+                        total.incrementAndGet();
                     }
+                    return null;
                 });
             }
 
-            threadPool.submit(new Callable<Void>() {
-
-                @Override
-                public Void call() throws Exception {
-                    while (!stop.get() && !Thread.currentThread().isInterrupted()) {
-                        try {
-                            int tCount = total.get();
-                            System.out.println("RPS: " + (tCount - prev.get()) / 5);
-                            prev.set(tCount);
-                            Thread.sleep(5000);
-                            //asyncConn.ping().get(1000, TimeUnit.MILLISECONDS);
-                        } catch (Exception e) {
-                            //System.out.println("PING FAILURE " + e.getMessage());
-                            e.printStackTrace();
-                            break;
-                        }
+            threadPool.submit(() -> {
+                while (!stop.get() && !Thread.currentThread().isInterrupted()) {
+                    try {
+                        int tCount = total.get();
+                        System.out.println("RPS: " + (tCount - prev.get()) / 5);
+                        prev.set(tCount);
+                        Thread.sleep(5000);
+                        //asyncConn.ping().get(1000, TimeUnit.MILLISECONDS);
+                    } catch (Exception e) {
+                        //System.out.println("PING FAILURE " + e.getMessage());
+                        e.printStackTrace();
+                        break;
                     }
-                    return null;
                 }
-
+                return null;
             });
 
 //			Thread.sleep(1000*300);

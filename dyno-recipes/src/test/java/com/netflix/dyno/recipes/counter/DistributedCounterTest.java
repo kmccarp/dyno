@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import com.netflix.dyno.connectionpool.TokenPoolTopology;
 import com.netflix.dyno.connectionpool.TopologyView;
@@ -69,25 +68,22 @@ public class DistributedCounterTest {
 
         List<TokenPoolTopology.TokenStatus> tokenStatusList = Arrays.asList(token1, token2, token3, token4);
 
-        topology = new HashMap<String, List<TokenPoolTopology.TokenStatus>>();
+        topology = new HashMap<>();
         topology.put("us-east-1c", tokenStatusList);
 
-        when(topologyView.getTokenForKey(anyString())).thenAnswer(new Answer<Long>() {
-            @Override
-            public Long answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                String arg = args[0].toString();
-                if (arg.endsWith("_100")) {
-                    return token1.getToken();
-                } else if (arg.endsWith("_200")) {
-                    return token2.getToken();
-                } else if (arg.endsWith("_300")) {
-                    return token3.getToken();
-                } else if (arg.endsWith("_400")) {
-                    return token4.getToken();
-                }
-                return 0L;
+        when(topologyView.getTokenForKey(anyString())).thenAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            String arg = args[0].toString();
+            if (arg.endsWith("_100")) {
+                return token1.getToken();
+            } else if (arg.endsWith("_200")) {
+                return token2.getToken();
+            } else if (arg.endsWith("_300")) {
+                return token3.getToken();
+            } else if (arg.endsWith("_400")) {
+                return token4.getToken();
             }
+            return 0L;
         });
 
     }

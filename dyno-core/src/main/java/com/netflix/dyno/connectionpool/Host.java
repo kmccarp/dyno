@@ -51,7 +51,7 @@ public class Host implements Comparable<Host> {
     private final String password;
 
     public enum Status {
-        Up, Down;
+        Up, Down
     }
 
     public Host(String hostname, String ipAddress, int port, int securePort, int datastorePort, String rack, String datacenter, Status status, String hashtag, String password) {
@@ -155,13 +155,16 @@ public class Host implements Comparable<Host> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
+        }
 
-        if (getClass() != obj.getClass())
+        if (getClass() != obj.getClass()) {
             return false;
+        }
 
         Host other = (Host) obj;
 

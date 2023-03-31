@@ -15,7 +15,6 @@
  */
 package com.netflix.dyno.connectionpool.impl;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -30,27 +29,18 @@ public class FutureOperationalResultImplTest {
     @Test
     public void testFutureResult() throws Exception {
 
-        final FutureTask<Integer> futureTask = new FutureTask<Integer>(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                return 11;
-            }
-        });
+        final FutureTask<Integer> futureTask = new FutureTask<>(() -> 11);
 
         LastOperationMonitor opMonitor = new LastOperationMonitor();
         FutureOperationalResultImpl<Integer> futureResult =
-                new FutureOperationalResultImpl<Integer>("test", futureTask, System.currentTimeMillis(), opMonitor);
+                new FutureOperationalResultImpl<>("test", futureTask, System.currentTimeMillis(), opMonitor);
 
         ExecutorService threadPool = Executors.newSingleThreadExecutor();
 
-        threadPool.submit(new Callable<Void>() {
-
-            @Override
-            public Void call() throws Exception {
-                Thread.sleep(400);
-                futureTask.run();
-                return null;
-            }
+        threadPool.submit(() -> {
+            Thread.sleep(400);
+            futureTask.run();
+            return null;
         });
 
         OperationResult<Integer> opResult = futureResult.get();

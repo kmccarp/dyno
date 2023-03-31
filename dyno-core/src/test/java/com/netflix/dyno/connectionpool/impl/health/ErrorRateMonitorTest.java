@@ -17,7 +17,6 @@ package com.netflix.dyno.connectionpool.impl.health;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +52,7 @@ public class ErrorRateMonitorTest {
     }
 
     private List<Bucket> getBuckets(Integer... values) {
-        List<Bucket> buckets = new ArrayList<Bucket>();
+        List<Bucket> buckets = new ArrayList<>();
 
         for (Integer i : values) {
             Bucket b = new Bucket();
@@ -97,7 +96,7 @@ public class ErrorRateMonitorTest {
         errorMonitor.addPolicy(new SimpleErrorCheckPolicy(130, 10, 80));   // 80% of 10 seconds, if error rate > 120 then alert
         errorMonitor.addPolicy(new SimpleErrorCheckPolicy(200, 4, 80));  // 80% of 5 seconds, if error rate > 200 then alert
 
-        List<Integer> rates = new ArrayList<Integer>();
+        List<Integer> rates = new ArrayList<>();
         rates.add(110);
         rates.add(250);
         int errorCount = runTest(10, errorMonitor, rates);
@@ -110,7 +109,7 @@ public class ErrorRateMonitorTest {
         int numThreads = 5;
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
 
-        final AtomicReference<RateLimitUtil> limiter = new AtomicReference<RateLimitUtil>(RateLimitUtil.create(rates.get(0)));
+        final AtomicReference<RateLimitUtil> limiter = new AtomicReference<>(RateLimitUtil.create(rates.get(0)));
         final AtomicBoolean stop = new AtomicBoolean(false);
 
         final CyclicBarrier barrier = new CyclicBarrier(numThreads + 1);
@@ -120,23 +119,19 @@ public class ErrorRateMonitorTest {
 
         for (int i = 0; i < numThreads; i++) {
 
-            threadPool.submit(new Callable<Void>() {
+            threadPool.submit(() -> {
 
-                @Override
-                public Void call() throws Exception {
-
-                    barrier.await();
-                    while (!stop.get() && !Thread.currentThread().isInterrupted()) {
-                        if (limiter.get().acquire()) {
-                            boolean success = errorMonitor.trackErrorRate(1);
-                            if (!success) {
-                                errorCount.incrementAndGet();
-                            }
+                barrier.await();
+                while (!stop.get() && !Thread.currentThread().isInterrupted()) {
+                    if (limiter.get().acquire()) {
+                        boolean success = errorMonitor.trackErrorRate(1);
+                        if (!success) {
+                            errorCount.incrementAndGet();
                         }
                     }
-                    latch.countDown();
-                    return null;
                 }
+                latch.countDown();
+                return null;
             });
         }
 
