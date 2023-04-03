@@ -43,7 +43,7 @@ public class HostsUpdater {
     private final TokenMapSupplier tokenMapSupplier;
 
     private final AtomicBoolean stop = new AtomicBoolean(false);
-    private final AtomicReference<HostStatusTracker> hostTracker = new AtomicReference<HostStatusTracker>(null);
+    private final AtomicReference<HostStatusTracker> hostTracker = new AtomicReference<>(null);
 
     public HostsUpdater(HostSupplier hSupplier, TokenMapSupplier tokenMapSupplier) {
         this.hostSupplier = hSupplier;

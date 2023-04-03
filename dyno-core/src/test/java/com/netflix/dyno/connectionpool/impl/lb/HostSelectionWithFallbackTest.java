@@ -30,12 +30,9 @@ import com.netflix.dyno.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.dyno.connectionpool.impl.CountingConnectionPoolMonitor;
 import com.netflix.dyno.connectionpool.impl.RetryNTimes;
 import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils;
-import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils.Transform;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,9 +52,9 @@ import static org.mockito.Mockito.when;
 
 public class HostSelectionWithFallbackTest {
 
-    private Map<Host, AtomicBoolean> poolStatus = new HashMap<Host, AtomicBoolean>();
+    private final Map<Host, AtomicBoolean> poolStatus = new HashMap<>();
 
-    private BaseOperation<Integer, Integer> testOperation = new BaseOperation<Integer, Integer>() {
+    private final BaseOperation<Integer, Integer> testOperation = new BaseOperation<Integer, Integer>() {
 
         @Override
         public String getName() {
@@ -104,9 +101,9 @@ public class HostSelectionWithFallbackTest {
     @Test
     public void testFallbackToRemotePoolWhenPoolInactive() throws Exception {
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
-        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<Host, HostConnectionPool<Integer>>();
+        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<>();
 
         for (Host host : hosts) {
             poolStatus.put(host, new AtomicBoolean(true));
@@ -115,7 +112,7 @@ public class HostSelectionWithFallbackTest {
 
         selection.initWithHosts(pools);
 
-        Set<String> hostnames = new HashSet<String>();
+        Set<String> hostnames = new HashSet<>();
 
         for (int i = 0; i < 10; i++) {
             Connection<Integer> conn = selection.getConnection(testOperation, 1, TimeUnit.MILLISECONDS);
@@ -161,9 +158,9 @@ public class HostSelectionWithFallbackTest {
     @Test
     public void testFallbackToRemotePoolWhenHostDown() throws Exception {
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
-        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<Host, HostConnectionPool<Integer>>();
+        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<>();
 
         for (Host host : hosts) {
             poolStatus.put(host, new AtomicBoolean(true));
@@ -172,7 +169,7 @@ public class HostSelectionWithFallbackTest {
 
         selection.initWithHosts(pools);
 
-        Set<String> hostnames = new HashSet<String>();
+        Set<String> hostnames = new HashSet<>();
 
         for (int i = 0; i < 10; i++) {
             Connection<Integer> conn = selection.getConnection(testOperation, 1, TimeUnit.MILLISECONDS);
@@ -222,10 +219,10 @@ public class HostSelectionWithFallbackTest {
     @Test
     public void testCrossRackFallback() throws Exception {
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
         RetryPolicy retry = new RetryNTimes(3, true);
 
-        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<Host, HostConnectionPool<Integer>>();
+        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<>();
 
         for (Host host : hosts) {
             poolStatus.put(host, new AtomicBoolean(true));
@@ -234,7 +231,7 @@ public class HostSelectionWithFallbackTest {
 
         selection.initWithHosts(pools);
 
-        Set<String> hostnames = new HashSet<String>();
+        Set<String> hostnames = new HashSet<>();
 
         for (int i = 0; i < 10; i++) {
             Connection<Integer> conn = selection.getConnectionUsingRetryPolicy(testOperation, 1, TimeUnit.MILLISECONDS,
@@ -250,15 +247,15 @@ public class HostSelectionWithFallbackTest {
                 retry);
         String fallbackHost = conn.getHost().getHostAddress();
 
-        Assert.assertTrue(!fallbackHost.equals("h1") && !fallbackHost.equals("h2"));
+        Assert.assertTrue(!"h1".equals(fallbackHost) && !"h2".equals(fallbackHost));
     }
 
     @Test
     public void testGetConnectionsFromRingNormal() throws Exception {
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
-        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<Host, HostConnectionPool<Integer>>();
+        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<>();
 
         for (Host host : hosts) {
             poolStatus.put(host, new AtomicBoolean(true));
@@ -274,9 +271,9 @@ public class HostSelectionWithFallbackTest {
     @Test
     public void testGetConnectionsFromRingWhenPrimaryHostPoolInactive() throws Exception {
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
-        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<Host, HostConnectionPool<Integer>>();
+        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<>();
 
         for (Host host : hosts) {
             poolStatus.put(host, new AtomicBoolean(true));
@@ -335,9 +332,9 @@ public class HostSelectionWithFallbackTest {
     @Test
     public void testGetConnectionsFromRingWhenHostDown() throws Exception {
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
-        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<Host, HostConnectionPool<Integer>>();
+        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<>();
 
         for (Host host : hosts) {
             poolStatus.put(host, new AtomicBoolean(true));
@@ -398,7 +395,7 @@ public class HostSelectionWithFallbackTest {
         cpConfig.setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware);
         cpConfig.withTokenSupplier(getTokenMapSupplier());
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
         List<HostToken> hostTokens = Arrays.asList(
                 new HostToken(1383429731L, new HostBuilder().setHostname("host-1").setPort(-1).setRack(rack1).createHost()), // Use -1 otherwise the port is opened which works
@@ -430,7 +427,7 @@ public class HostSelectionWithFallbackTest {
         cpConfig.setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware);
         cpConfig.withTokenSupplier(getTokenMapSupplier());
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
         List<HostToken> hostTokens = Arrays.asList(
                 new HostToken(1111L, new HostBuilder().setHostname("host-1").setPort(-1).setRack(rack1).createHost()),
@@ -452,7 +449,7 @@ public class HostSelectionWithFallbackTest {
         cpConfig.setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware);
         cpConfig.withTokenSupplier(getTokenMapSupplier());
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
         List<HostToken> hostTokens = Arrays.asList(
                 new HostToken(1111L, new HostBuilder().setHostname("host-1").setPort(-1).setRack(rack1).createHost()),
@@ -471,7 +468,7 @@ public class HostSelectionWithFallbackTest {
         cpConfig.setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware);
         cpConfig.withTokenSupplier(getTokenMapSupplier());
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
         List<HostToken> hostTokens = Arrays.asList(
                 new HostToken(1111L, h1),
@@ -491,7 +488,7 @@ public class HostSelectionWithFallbackTest {
         cpConfig.setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware);
         cpConfig.withTokenSupplier(getTokenMapSupplier());
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
         List<HostToken> hostTokens = Arrays.asList(
                 new HostToken(1111L, new HostBuilder().setHostname("host-1").setPort(-1).setRack(rack1).createHost()),
@@ -509,7 +506,7 @@ public class HostSelectionWithFallbackTest {
         cpConfig.setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware);
         cpConfig.withTokenSupplier(getTokenMapSupplier());
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
 
         List<HostToken> hostTokens = Arrays.asList(
                 new HostToken(3530913378L, new HostBuilder().setHostname("host-1").setPort(-1).setRack(rack1).createHost()),
@@ -537,7 +534,7 @@ public class HostSelectionWithFallbackTest {
         int rf = selection.calculateReplicationFactor(hostTokens);
         Assert.assertEquals(3, rf);
         cpConfig.setLocalRack(null);
-        selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
+        selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
         rf = selection.calculateReplicationFactor(hostTokens);
 
         Assert.assertEquals(3, rf);
@@ -549,8 +546,8 @@ public class HostSelectionWithFallbackTest {
         cpConfig.withTokenSupplier(getTokenMapSupplier());
         cpConfig.withHashPartitioner(getMockHashPartitioner(1000000000L));
 
-        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<Integer>(cpConfig, cpMonitor);
-        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<Host, HostConnectionPool<Integer>>();
+        HostSelectionWithFallback<Integer> selection = new HostSelectionWithFallback<>(cpConfig, cpMonitor);
+        Map<Host, HostConnectionPool<Integer>> pools = new HashMap<>();
 
         for (Host host : hosts) {
             poolStatus.put(host, new AtomicBoolean(true));
@@ -569,19 +566,14 @@ public class HostSelectionWithFallbackTest {
 
         Collection<Connection<Integer>> connections = selection.getConnectionsToRing(null, 10, TimeUnit.MILLISECONDS);
 
-        return CollectionUtils.transform(connections, new Transform<Connection<Integer>, String>() {
-            @Override
-            public String get(Connection<Integer> x) {
-                return x.getHost().getHostAddress();
-            }
-        });
+        return CollectionUtils.transform(connections, x -> x.getHost().getHostAddress());
 
     }
 
     private void verifyExactly(Collection<String> resultCollection, String... hostnames) {
 
-        Set<String> result = new HashSet<String>(resultCollection);
-        Set<String> all = new HashSet<String>();
+        Set<String> result = new HashSet<>(resultCollection);
+        Set<String> all = new HashSet<>();
         all.add("h1");
         all.add("h2");
         all.add("h3");
@@ -589,8 +581,8 @@ public class HostSelectionWithFallbackTest {
         all.add("h5");
         all.add("h6");
 
-        Set<String> expected = new HashSet<String>(Arrays.asList(hostnames));
-        Set<String> notExpected = new HashSet<String>(all);
+        Set<String> expected = new HashSet<>(Arrays.asList(hostnames));
+        Set<String> notExpected = new HashSet<>(all);
         notExpected.removeAll(expected);
 
         for (String e : expected) {
@@ -603,7 +595,7 @@ public class HostSelectionWithFallbackTest {
 
     private void verifyPresent(Collection<String> resultCollection, String... hostnames) {
 
-        Set<String> result = new HashSet<String>(resultCollection);
+        Set<String> result = new HashSet<>(resultCollection);
         for (String h : hostnames) {
             Assert.assertTrue("Result: " + result + ", expected: " + h, result.contains(h));
         }
@@ -611,7 +603,7 @@ public class HostSelectionWithFallbackTest {
 
     private void verifyAtLeastOnePresent(Collection<String> resultCollection, String... hostnames) {
 
-        Set<String> result = new HashSet<String>(resultCollection);
+        Set<String> result = new HashSet<>(resultCollection);
         boolean present = false;
         for (String h : hostnames) {
             if (result.contains(h)) {
@@ -629,14 +621,7 @@ public class HostSelectionWithFallbackTest {
         when(mockConnection.getHost()).thenReturn(host);
 
         HostConnectionPool<Integer> mockPool = mock(HostConnectionPool.class);
-        when(mockPool.isActive()).thenAnswer(new Answer<Boolean>() {
-
-            @Override
-            public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                return status.get();
-            }
-
-        });
+        when(mockPool.isActive()).thenAnswer(invocation -> status.get());
         when(mockPool.borrowConnection(any(Integer.class), any(TimeUnit.class))).thenReturn(mockConnection);
         when(mockPool.getHost()).thenReturn(host);
 
@@ -665,7 +650,7 @@ public class HostSelectionWithFallbackTest {
 
     private TokenMapSupplier getTokenMapSupplier() {
 
-        final Map<Host, HostToken> tokenMap = new HashMap<Host, HostToken>();
+        final Map<Host, HostToken> tokenMap = new HashMap<>();
 
         tokenMap.put(h1, new HostToken(1383429731L, h1));
         tokenMap.put(h2, new HostToken(3530913377L, h2));
@@ -677,7 +662,7 @@ public class HostSelectionWithFallbackTest {
         return new TokenMapSupplier() {
             @Override
             public List<HostToken> getTokens(Set<Host> activeHosts) {
-                return new ArrayList<HostToken>(tokenMap.values());
+                return new ArrayList<>(tokenMap.values());
             }
 
             @Override

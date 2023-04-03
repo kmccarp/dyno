@@ -19,9 +19,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class RateLimitUtil {
+public final class RateLimitUtil {
 
-    private final AtomicReference<InnerState> ref = new AtomicReference<InnerState>(null);
+    private final AtomicReference<InnerState> ref = new AtomicReference<>(null);
 
     private RateLimitUtil(int rps) {
         this.ref.set(new InnerState(rps));
@@ -62,7 +62,7 @@ public class RateLimitUtil {
     }
 
 
-    private class InnerState {
+    private final class InnerState {
 
         private final AtomicInteger counter = new AtomicInteger();
         private final AtomicLong second = new AtomicLong(0L);

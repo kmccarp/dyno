@@ -33,8 +33,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import com.netflix.dyno.connectionpool.ConnectionPoolConfiguration;
 import com.netflix.dyno.connectionpool.Host;
@@ -64,7 +62,7 @@ public class ConnectionPoolHealthTrackerTest {
     public void testConnectionPoolRecycle() throws Exception {
 
         ConnectionPoolConfiguration config = new ConnectionPoolConfigurationImpl("test");
-        ConnectionPoolHealthTracker<Integer> tracker = new ConnectionPoolHealthTracker<Integer>(config, threadPool, 1000, -1);
+        ConnectionPoolHealthTracker<Integer> tracker = new ConnectionPoolHealthTracker<>(config, threadPool, 1000, -1);
         tracker.start();
 
         Host h1 = new HostBuilder().setHostname("h1").setRack("r1").setStatus(Status.Up).createHost();
@@ -92,7 +90,7 @@ public class ConnectionPoolHealthTrackerTest {
     public void testBadConnectionPoolKeepsReconnecting() throws Exception {
 
         ConnectionPoolConfiguration config = new ConnectionPoolConfigurationImpl("test");
-        ConnectionPoolHealthTracker<Integer> tracker = new ConnectionPoolHealthTracker<Integer>(config, threadPool, 1000, -1);
+        ConnectionPoolHealthTracker<Integer> tracker = new ConnectionPoolHealthTracker<>(config, threadPool, 1000, -1);
         tracker.start();
 
         Host h1 = new HostBuilder().setHostname("h1").setRack("r1").setStatus(Status.Up).createHost();
@@ -126,33 +124,19 @@ public class ConnectionPoolHealthTrackerTest {
         HostConnectionPool<Integer> hostPool = mock(HostConnectionPool.class);
         when(hostPool.getHost()).thenReturn(host);
 
-        doAnswer(new Answer<Boolean>() {
+        doAnswer(invocation -> active.get()).when(hostPool).isActive();
 
-            @Override
-            public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                return active.get();
-            }
-        }).when(hostPool).isActive();
-
-        doAnswer(new Answer<Void>() {
-
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                active.set(false);
-                return null;
-            }
+        doAnswer(invocation -> {
+            active.set(false);
+            return null;
         }).when(hostPool).markAsDown(any(DynoException.class));
 
-        doAnswer(new Answer<Void>() {
-
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                if (badConnectionPool) {
-                    throw new RuntimeException();
-                } else {
-                    active.set(true);
-                    return null;
-                }
+        doAnswer(invocation -> {
+            if (badConnectionPool) {
+                throw new RuntimeException();
+            } else {
+                active.set(true);
+                return null;
             }
         }).when(hostPool).reconnect();
 

@@ -31,7 +31,6 @@ import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.Host.Status;
 import com.netflix.dyno.connectionpool.TokenMapSupplier;
 import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils;
-import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils.Predicate;
 
 /**
  * An Example of the JSON payload that we get from dynomite-manager (this will eventually be changed so that the call
@@ -139,7 +138,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
         // Doing this since not all tokens are received from an individual call
         // to a dynomite server
         // hence trying them all
-        Set<HostToken> allTokens = new HashSet<HostToken>();
+        Set<HostToken> allTokens = new HashSet<>();
         Set<Host> remainingHosts = new HashSet<>(activeHosts);
 
         for (Host host : activeHosts) {
@@ -149,7 +148,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
                     allTokens.add(hToken);
                     remainingHosts.remove(hToken.getHost());
                 }
-                if (remainingHosts.size() == 0) {
+                if (remainingHosts.isEmpty()) {
                     Logger.info("Received token information for " + allTokens.size() + " hosts. Not querying other hosts");
                     break;
                 }
@@ -163,7 +162,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
     @Override
     public HostToken getTokenForHost(final Host host, final Set<Host> activeHosts) {
         String jsonPayload;
-        if (activeHosts.size() == 0) {
+        if (activeHosts.isEmpty()) {
             jsonPayload = getTopologyJsonPayload(host.getHostAddress());
         } else {
             try {
@@ -179,13 +178,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
         }
         List<HostToken> hostTokens = parseTokenListFromJson(jsonPayload);
 
-        return CollectionUtils.find(hostTokens, new Predicate<HostToken>() {
-
-            @Override
-            public boolean apply(HostToken x) {
-                return x.getHost().compareTo(host) == 0;
-            }
-        });
+        return CollectionUtils.find(hostTokens, x -> x.getHost().compareTo(host) == 0);
     }
 
     private boolean isLocalZoneHost(Host host) {
@@ -209,7 +202,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
     // package-private for Test
     List<HostToken> parseTokenListFromJson(String json) {
 
-        List<HostToken> hostTokens = new ArrayList<HostToken>();
+        List<HostToken> hostTokens = new ArrayList<>();
 
         JSONParser parser = new JSONParser();
         try {

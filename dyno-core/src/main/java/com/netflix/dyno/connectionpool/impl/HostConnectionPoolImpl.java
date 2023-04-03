@@ -59,7 +59,7 @@ public class HostConnectionPoolImpl<CL> implements HostConnectionPool<CL> {
     private static final int CONNECTION_CREATE_RETRY_CNT = 3;
 
     // The connections available for this connection pool
-    private final LinkedBlockingQueue<Connection<CL>> availableConnections = new LinkedBlockingQueue<Connection<CL>>();
+    private final LinkedBlockingQueue<Connection<CL>> availableConnections = new LinkedBlockingQueue<>();
     // Track the no of connections open (both available and in use)
     private final AtomicInteger numActiveConnections = new AtomicInteger(0);
 
@@ -81,7 +81,7 @@ public class HostConnectionPoolImpl<CL> implements HostConnectionPool<CL> {
     private final ConnectionPoolState<CL> cpDown = new ConnectionPoolReconnectingOrDown();
 
     // The thread safe reference to the pool state
-    private final AtomicReference<ConnectionPoolState<CL>> cpState = new AtomicReference<ConnectionPoolState<CL>>(cpNotInited);
+    private final AtomicReference<ConnectionPoolState<CL>> cpState = new AtomicReference<>(cpNotInited);
 
     public HostConnectionPoolImpl(Host host, ConnectionFactory<CL> conFactory,
                                   ConnectionPoolConfiguration cpConfig, ConnectionPoolMonitor poolMonitor) {
@@ -152,7 +152,7 @@ public class HostConnectionPoolImpl<CL> implements HostConnectionPool<CL> {
         Logger.info("Shutting down connection pool for host:" + host);
         cpState.set(cpDown);
 
-        List<Connection<CL>> connections = new ArrayList<Connection<CL>>();
+        List<Connection<CL>> connections = new ArrayList<>();
         availableConnections.drainTo(connections);
 
         for (Connection<CL> connection : connections) {
@@ -289,7 +289,7 @@ public class HostConnectionPoolImpl<CL> implements HostConnectionPool<CL> {
     }
 
 
-    private class ConnectionPoolActive implements ConnectionPoolState<CL> {
+    private final class ConnectionPoolActive implements ConnectionPoolState<CL> {
 
         private final HostConnectionPoolImpl<CL> pool;
 
@@ -421,7 +421,7 @@ public class HostConnectionPoolImpl<CL> implements HostConnectionPool<CL> {
     }
 
 
-    private class ConnectionPoolReconnectingOrDown implements ConnectionPoolState<CL> {
+    private final class ConnectionPoolReconnectingOrDown implements ConnectionPoolState<CL> {
 
         private ConnectionPoolReconnectingOrDown() {
         }
@@ -468,7 +468,7 @@ public class HostConnectionPoolImpl<CL> implements HostConnectionPool<CL> {
         }
     }
 
-    private class ConnectionPoolNotInited implements ConnectionPoolState<CL> {
+    private final class ConnectionPoolNotInited implements ConnectionPoolState<CL> {
 
         private ConnectionPoolNotInited() {
         }

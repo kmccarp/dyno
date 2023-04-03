@@ -38,7 +38,7 @@ public class ConsulHostsSupplierTest {
 
     private ConsulProcess consulServer;
     private ConsulClient consulClient;
-    private static String APPLICATION_NAME = "testApp";
+    private static final String APPLICATION_NAME = "testApp";
 
     @Before
     public void beforeEach() {

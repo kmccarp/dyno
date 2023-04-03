@@ -24,7 +24,6 @@ import com.netflix.dyno.connectionpool.impl.HostSelectionStrategy;
 import com.netflix.dyno.connectionpool.impl.hash.BinarySearchTokenMapper;
 import com.netflix.dyno.connectionpool.impl.hash.Murmur1HashPartitioner;
 import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils;
-import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils.Transform;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class TokenAwareSelection<CL> implements HostSelectionStrategy<CL> {
 
     private final BinarySearchTokenMapper tokenMapper;
 
-    private final ConcurrentHashMap<Long, HostConnectionPool<CL>> tokenPools = new ConcurrentHashMap<Long, HostConnectionPool<CL>>();
+    private final ConcurrentHashMap<Long, HostConnectionPool<CL>> tokenPools = new ConcurrentHashMap<>();
 
     public TokenAwareSelection() {
 
@@ -62,14 +61,7 @@ public class TokenAwareSelection<CL> implements HostSelectionStrategy<CL> {
     @Override
     public void initWithHosts(Map<HostToken, HostConnectionPool<CL>> hPools) {
 
-        tokenPools.putAll(CollectionUtils.transformMapKeys(hPools, new Transform<HostToken, Long>() {
-
-            @Override
-            public Long get(HostToken x) {
-                return x.getToken();
-            }
-
-        }));
+        tokenPools.putAll(CollectionUtils.transformMapKeys(hPools, x -> x.getToken()));
 
         this.tokenMapper.initSearchMechanism(hPools.keySet());
     }
@@ -132,7 +124,7 @@ public class TokenAwareSelection<CL> implements HostSelectionStrategy<CL> {
 
     @Override
     public List<HostConnectionPool<CL>> getOrderedHostPools() {
-        return new ArrayList<HostConnectionPool<CL>>(tokenPools.values());
+        return new ArrayList<>(tokenPools.values());
     }
 
     @Override
@@ -191,8 +183,7 @@ public class TokenAwareSelection<CL> implements HostSelectionStrategy<CL> {
     }
 
     public Long getKeyHash(String key) {
-        Long keyHash = tokenMapper.hash(key);
-        return keyHash;
+        return tokenMapper.hash(key);
     }
 
     @Override
