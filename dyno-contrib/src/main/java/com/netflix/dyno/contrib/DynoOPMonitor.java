@@ -31,8 +31,8 @@ import com.netflix.servo.tag.BasicTag;
 
 public class DynoOPMonitor implements OperationMonitor {
 
-    private final ConcurrentHashMap<String, DynoOpCounter> counterMap = new ConcurrentHashMap<String, DynoOpCounter>();
-    private final ConcurrentHashMap<String, DynoTimingCounters> timerMap = new ConcurrentHashMap<String, DynoTimingCounters>();
+    private final ConcurrentHashMap<String, DynoOpCounter> counterMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, DynoTimingCounters> timerMap = new ConcurrentHashMap<>();
 
     private final String appName;
 
@@ -65,7 +65,7 @@ public class DynoOPMonitor implements OperationMonitor {
         getOrCreateCounter(opName, true).incrementFailure();
     }
 
-    private class DynoOpCounter {
+    private final class DynoOpCounter {
 
         private final Counter success;
         private final Counter successCompressionEnabled;
@@ -121,7 +121,7 @@ public class DynoOPMonitor implements OperationMonitor {
         return counter;
     }
 
-    private class DynoTimingCounters {
+    private final class DynoTimingCounters {
 
         private final EstimatedHistogramMean latMean;
         private final EstimatedHistogramPercentile lat99;

@@ -50,9 +50,9 @@ public class ConnectionPoolHealthTracker<CL> implements HealthTracker<CL> {
     private final ConnectionPoolConfiguration cpConfiguration;
     private final ScheduledExecutorService threadPool;
     private final AtomicBoolean stop = new AtomicBoolean(false);
-    private final ConcurrentHashMap<Host, ErrorMonitor> errorRates = new ConcurrentHashMap<Host, ErrorMonitor>();
-    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> reconnectingPools = new ConcurrentHashMap<Host, HostConnectionPool<CL>>();
-    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> pingingPools = new ConcurrentHashMap<Host, HostConnectionPool<CL>>();
+    private final ConcurrentHashMap<Host, ErrorMonitor> errorRates = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> reconnectingPools = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> pingingPools = new ConcurrentHashMap<>();
 
     private final AtomicBoolean startedPing = new AtomicBoolean(false);
 
@@ -81,53 +81,48 @@ public class ConnectionPoolHealthTracker<CL> implements HealthTracker<CL> {
 
     public void start() {
 
-        threadPool.scheduleWithFixedDelay(new Runnable() {
+        threadPool.scheduleWithFixedDelay(() -> {
 
-            @Override
-            public void run() {
+            if (stop.get() || Thread.currentThread().isInterrupted()) {
+                return;
+            }
 
-                if (stop.get() || Thread.currentThread().isInterrupted()) {
-                    return;
+            Logger.debug("Running, pending pools size: " + reconnectingPools.size());
+
+            for (Host host : reconnectingPools.keySet()) {
+
+                if (!host.isUp()) {
+                    Logger.info("Host: " + host + " is marked as down, evicting host from reconnection pool");
+                    reconnectingPools.remove(host);
+                    continue;
                 }
 
-                Logger.debug("Running, pending pools size: " + reconnectingPools.size());
-
-                for (Host host : reconnectingPools.keySet()) {
-
-                    if (!host.isUp()) {
-                        Logger.info("Host: " + host + " is marked as down, evicting host from reconnection pool");
-                        reconnectingPools.remove(host);
-                        continue;
-                    }
-
-                    HostConnectionPool<CL> pool = reconnectingPools.get(host);
-                    Logger.info("Checking for reconnecting pool for host: " + host + ", pool active? " + pool.isActive());
-                    if (pool.isActive()) {
-                        // Pool is already active. Move on
-                        reconnectingPools.remove(host);
-                    } else {
-                        try {
-                            Logger.info("Reconnecting pool : " + pool);
-                            pool.markAsDown(null);
-                            if (PoolReconnectWaitMillis > 0) {
-                                Logger.debug("Sleeping to allow enough time to drain connections");
-                                Thread.sleep(PoolReconnectWaitMillis);
-                            }
-                            pool.reconnect();
-                            if (pool.isActive()) {
-                                Logger.info("Host pool reactivated: " + host);
-                                reconnectingPools.remove(host);
-                            } else {
-                                Logger.info("Could not re-activate pool, will try again later");
-                            }
-                        } catch (Exception e) {
-                            // do nothing, will retry again once thread wakes up
-                            Logger.warn("Failed to reconnect pool for host: " + host + " " + e.getMessage());
+                HostConnectionPool<CL> pool = reconnectingPools.get(host);
+                Logger.info("Checking for reconnecting pool for host: " + host + ", pool active? " + pool.isActive());
+                if (pool.isActive()) {
+                    // Pool is already active. Move on
+                    reconnectingPools.remove(host);
+                } else {
+                    try {
+                        Logger.info("Reconnecting pool : " + pool);
+                        pool.markAsDown(null);
+                        if (PoolReconnectWaitMillis > 0) {
+                            Logger.debug("Sleeping to allow enough time to drain connections");
+                            Thread.sleep(PoolReconnectWaitMillis);
                         }
+                        pool.reconnect();
+                        if (pool.isActive()) {
+                            Logger.info("Host pool reactivated: " + host);
+                            reconnectingPools.remove(host);
+                        } else {
+                            Logger.info("Could not re-activate pool, will try again later");
+                        }
+                    } catch (Exception e) {
+                        // do nothing, will retry again once thread wakes up
+                        Logger.warn("Failed to reconnect pool for host: " + host + " " + e.getMessage());
                     }
                 }
             }
-
         }, 1000, SleepMillis, TimeUnit.MILLISECONDS);
     }
 

@@ -16,7 +16,6 @@
 package com.netflix.dyno.connectionpool.impl.health;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -41,7 +40,7 @@ public class RateTrackerTest {
         int numThreads = 5;
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
 
-        final AtomicReference<RateLimitUtil> limiter = new AtomicReference<RateLimitUtil>(RateLimitUtil.create(100));
+        final AtomicReference<RateLimitUtil> limiter = new AtomicReference<>(RateLimitUtil.create(100));
 
         final AtomicBoolean stop = new AtomicBoolean(false);
 
@@ -53,21 +52,17 @@ public class RateTrackerTest {
 
         for (int i = 0; i < numThreads; i++) {
 
-            threadPool.submit(new Callable<Void>() {
+            threadPool.submit(() -> {
 
-                @Override
-                public Void call() throws Exception {
-
-                    barrier.await();
-                    while (!stop.get() && !Thread.currentThread().isInterrupted()) {
-                        if (limiter.get().acquire()) {
-                            tracker.trackRate(1);
-                            totalOps.incrementAndGet();
-                        }
+                barrier.await();
+                while (!stop.get() && !Thread.currentThread().isInterrupted()) {
+                    if (limiter.get().acquire()) {
+                        tracker.trackRate(1);
+                        totalOps.incrementAndGet();
                     }
-                    latch.countDown();
-                    return null;
                 }
+                latch.countDown();
+                return null;
             });
         }
 
