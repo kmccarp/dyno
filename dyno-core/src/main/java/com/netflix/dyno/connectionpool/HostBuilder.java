@@ -9,13 +9,13 @@ public class HostBuilder {
     private String hostname;
     private int port = DEFAULT_PORT;
     private String rack;
-    private String ipAddress = null;
+    private String ipAddress;
     private int securePort = DEFAULT_PORT;
     private int datastorePort = DEFAULT_DATASTORE_PORT;
-    private String datacenter = null;
+    private String datacenter;
     private Host.Status status = Host.Status.Down;
-    private String hashtag = null;
-    private String password = null;
+    private String hashtag;
+    private String password;
 
     public HostBuilder setPort(int port) {
         this.port = port;

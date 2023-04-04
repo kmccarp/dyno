@@ -36,7 +36,7 @@ public class AbstractTokenMapSupplierTest {
             "\"{\"token\":\"237822755\",\"hostname\":\"ec2-54-211-220-55.compute-1.amazonaws.com\",\"port\":\"11211\",\"dc\":\"us-east-1\",\"ip\":\"54.211.220.55\",\"zone\":\"us-east-1e\"},\"" +
             "\"{\"token\":\"1669478519\",\"hostname\":\"ec2-54-80-65-203.compute-1.amazonaws.com\",\"port\":\"11211\",\"dc\":\"us-east-1\",\"ip\":\"54.80.65.203\",\"zone\":\"us-east-1e\"}]\"";
 
-    private TokenMapSupplier testTokenMapSupplier = new AbstractTokenMapSupplier() {
+    private final TokenMapSupplier testTokenMapSupplier = new AbstractTokenMapSupplier() {
 
         @Override
         public String getTopologyJsonPayload(Set<Host> activeHosts) {

@@ -91,7 +91,7 @@ public class ConsulHostsSupplier implements HostSupplier {
         Response<List<HealthService>> services = discoveryClient.getHealthServices(applicationName, false, QueryParams.DEFAULT);
 
         List<HealthService> app = services.getValue();
-        List<Host> hosts = new ArrayList<Host>();
+        List<Host> hosts = new ArrayList<>();
 
         if (app != null && app.size() < 0) {
             return hosts;
@@ -129,14 +129,13 @@ public class ConsulHostsSupplier implements HostSupplier {
                             Logger.error("Rack wasn't found for host:" + info.getNode()
                                     + " there may be issues matching it up to the token map");
                         }
-                        Host host = new HostBuilder().setHostname(hostName)
+                        return new HostBuilder().setHostname(hostName)
                                 .setIpAddress(hostName)
                                 .setPort(info.getService().getPort())
                                 .setRack(rack)
-                                .setDatacenter(String.valueOf(metaData.get("datacenter")))
+                                .setDatacenter(metaData.get("datacenter"))
                                 .setStatus(status)
                                 .createHost();
-                        return host;
                     }
                 }));
 
