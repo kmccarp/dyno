@@ -51,13 +51,7 @@ public class CustomTokenSupplierExample {
 
         final Host localHost = new HostBuilder().setHostname("localhost").setPort(port).setRack("localrack").setStatus(Host.Status.Up).createHost();
 
-        final HostSupplier localHostSupplier = new HostSupplier() {
-
-            @Override
-            public List<Host> getHosts() {
-                return Collections.singletonList(localHost);
-            }
-        };
+        final HostSupplier localHostSupplier = () -> Collections.singletonList(localHost);
 
         final TokenMapSupplier supplier = new TokenMapSupplier() {
 
@@ -105,7 +99,7 @@ public class CustomTokenSupplierExample {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         BasicConfigurator.configure();
         CustomTokenSupplierExample example = new CustomTokenSupplierExample();

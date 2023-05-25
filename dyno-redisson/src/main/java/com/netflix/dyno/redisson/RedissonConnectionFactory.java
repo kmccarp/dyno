@@ -69,8 +69,8 @@ public class RedissonConnectionFactory implements ConnectionFactory<RedisAsyncCo
         private final RedisClient client;
         private final OperationMonitor opMonitor;
 
-        private RedisAsyncConnection<String, String> rConn = null;
-        private final AtomicReference<DynoConnectException> lastEx = new AtomicReference<DynoConnectException>(null);
+        private RedisAsyncConnection<String, String> rConn;
+        private final AtomicReference<DynoConnectException> lastEx = new AtomicReference<>(null);
 
         private final ConnectionContextImpl context = new ConnectionContextImpl();
 

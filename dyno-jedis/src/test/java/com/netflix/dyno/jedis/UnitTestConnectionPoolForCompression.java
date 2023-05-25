@@ -25,7 +25,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -57,65 +56,51 @@ public class UnitTestConnectionPoolForCompression implements ConnectionPool<Jedi
 
         this.config = config;
         this.opMonitor = opMonitor;
-        this.redis_data = new HashMap<String, String>();
-        when(client.set(anyString(), anyString())).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                String key = (String) invocation.getArguments()[0];
-                String value = (String) invocation.getArguments()[1];
-                redis_data.put(key, value);
-                return value;
-            }
+        this.redis_data = new HashMap<>();
+        when(client.set(anyString(), anyString())).thenAnswer(invocation -> {
+            String key = (String) invocation.getArguments()[0];
+            String value = (String) invocation.getArguments()[1];
+            redis_data.put(key, value);
+            return value;
         });
 
         when(client.get(CompressionTest.VALUE_1KB)).thenReturn(CompressionTest.VALUE_1KB);
 
-        when(client.get(CompressionTest.KEY_3KB)).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                return ZipUtils.compressStringToBase64String(CompressionTest.VALUE_3KB);
-            }
-        });
+        when(client.get(CompressionTest.KEY_3KB)).thenAnswer(invocation -> ZipUtils.compressStringToBase64String(CompressionTest.VALUE_3KB));
 
         when(client.get(CompressionTest.KEY_1KB)).thenReturn(CompressionTest.VALUE_1KB);
 
-        when(client.hmset(anyString(), anyMap())).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                Map<String, String> map = (Map<String, String>) invocation.getArguments()[1];
-                if (map != null) {
-                    if (map.containsKey(CompressionTest.KEY_3KB)) {
-                        if (ZipUtils.isCompressed(map.get(CompressionTest.KEY_3KB))) {
-                            return "OK";
-                        } else {
-                            throw new RuntimeException("Value was not compressed");
-                        }
+        when(client.hmset(anyString(), anyMap())).thenAnswer(invocation -> {
+            Map<String, String> map = (Map<String, String>) invocation.getArguments()[1];
+            if (map != null) {
+                if (map.containsKey(CompressionTest.KEY_3KB)) {
+                    if (ZipUtils.isCompressed(map.get(CompressionTest.KEY_3KB))) {
+                        return "OK";
+                    } else {
+                        throw new RuntimeException("Value was not compressed");
                     }
-                } else {
-                    throw new RuntimeException("Map is NULL");
                 }
-
-                return "OK";
+            } else {
+                throw new RuntimeException("Map is NULL");
             }
+
+            return "OK";
         });
 
-        when(client.mget(Matchers.<String>anyVararg())).thenAnswer(new Answer<List<String>>() {
-            @Override
-            public List<String> answer(InvocationOnMock invocation) throws Throwable {
+        when(client.mget(Matchers.<String>anyVararg())).thenAnswer(invocation -> {
 
-                // Get the keys passed
-                Object[] keys = invocation.getArguments();
+            // Get the keys passed
+            Object[] keys = invocation.getArguments();
 
-                List<String> values = new ArrayList<String>(10);
-                for (int i = 0; i < keys.length; i++) {
-                    // get the ith key, find the value in redis_data
-                    // if found, return that else return nil
-                    String key = (String) keys[i];
-                    String value = redis_data.get(key);
-                    values.add(i, value);
-                }
-                return values;
+            List<String> values = new ArrayList<>(10);
+            for (int i = 0; i < keys.length; i++) {
+                // get the ith key, find the value in redis_data
+                // if found, return that else return nil
+                String key = (String) keys[i];
+                String value = redis_data.get(key);
+                values.add(i, value);
             }
+            return values;
         });
 
     }
@@ -174,7 +159,7 @@ public class UnitTestConnectionPoolForCompression implements ConnectionPool<Jedi
             } else {
                 opMonitor.recordSuccess(op.getName());
             }
-            return new OperationResultImpl<R>("Test", r, null);
+            return new OperationResultImpl<>("Test", r, null);
         } finally {
             context.reset();
         }

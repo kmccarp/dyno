@@ -51,7 +51,7 @@ public class SimpleAsyncConnectionPoolImplTest {
     private static SimpleAsyncConnectionPoolImpl<TestClient> pool;
     private static ExecutorService threadPool;
 
-    private static ConnectionFactory<TestClient> connFactory = new ConnectionFactory<TestClient>() {
+    private static final ConnectionFactory<TestClient> connFactory = new ConnectionFactory<TestClient>() {
         @SuppressWarnings("unchecked")
         @Override
         public Connection<TestClient> createConnection(HostConnectionPool<TestClient> pool) throws DynoConnectException, ThrottledException {
@@ -69,7 +69,7 @@ public class SimpleAsyncConnectionPoolImplTest {
         }
     };
 
-    private static ConnectionPoolConfigurationImpl config = new ConnectionPoolConfigurationImpl("TestClient");
+    private static final ConnectionPoolConfigurationImpl config = new ConnectionPoolConfigurationImpl("TestClient");
     private static CountingConnectionPoolMonitor cpMonitor = new CountingConnectionPoolMonitor();
 
     @BeforeClass
@@ -97,7 +97,7 @@ public class SimpleAsyncConnectionPoolImplTest {
     @Test
     public void testRegularProcess() throws Exception {
 
-        pool = new SimpleAsyncConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new SimpleAsyncConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         pool.primeConnections();
 
         int nThreads = 3;
@@ -129,7 +129,7 @@ public class SimpleAsyncConnectionPoolImplTest {
     @Test
     public void testMarkHostAsDown() throws Exception {
 
-        pool = new SimpleAsyncConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new SimpleAsyncConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         pool.primeConnections();
 
         int nThreads = 3;
@@ -165,7 +165,7 @@ public class SimpleAsyncConnectionPoolImplTest {
     @Test
     public void testReconnect() throws Exception {
 
-        pool = new SimpleAsyncConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new SimpleAsyncConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         pool.primeConnections();
 
         int nThreads = 3;
@@ -219,7 +219,7 @@ public class SimpleAsyncConnectionPoolImplTest {
         Assert.assertEquals("Conns create failed: " + cpMonitor.getConnectionCreateFailedCount(), 0, cpMonitor.getConnectionCreateFailedCount());
     }
 
-    private class BasicWorker implements Callable<Void> {
+    private final class BasicWorker implements Callable<Void> {
 
         private final BasicResult result;
         private final TestControl control;
@@ -265,7 +265,7 @@ public class SimpleAsyncConnectionPoolImplTest {
         }
     }
 
-    private class TestControl {
+    private final class TestControl {
 
         private final AtomicBoolean stop = new AtomicBoolean(false);
         private final CountDownLatch latch;
@@ -291,7 +291,7 @@ public class SimpleAsyncConnectionPoolImplTest {
         }
     }
 
-    private class BasicResult {
+    private final class BasicResult {
 
         private final AtomicInteger opCount = new AtomicInteger(0);
         private final AtomicInteger successCount = new AtomicInteger(0);

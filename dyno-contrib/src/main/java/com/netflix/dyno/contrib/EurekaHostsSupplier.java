@@ -79,7 +79,7 @@ public class EurekaHostsSupplier implements HostSupplier {
         }
         Logger.info("Dyno fetching instance list for app: " + applicationName);
         Application app = discoveryClient.getApplication(applicationName);
-        List<Host> hosts = new ArrayList<Host>();
+        List<Host> hosts = new ArrayList<>();
 
         if (app == null) {
             return hosts;
@@ -106,8 +106,7 @@ public class EurekaHostsSupplier implements HostSupplier {
             if (rack == null) {
                 Logger.error("Rack wasn't found for host:" + info.getHostName() + " there may be issues matching it up to the token map");
             }
-            Host host = new HostBuilder().setHostname(info.getHostName()).setIpAddress(info.getIPAddr()).setRack(rack).setStatus(status).createHost();
-            return host;
+            return new HostBuilder().setHostname(info.getHostName()).setIpAddress(info.getIPAddr()).setRack(rack).setStatus(status).createHost();
         }));
         Logger.info("Dyno found hosts from eureka - num hosts: " + hosts.size());
         return hosts;

@@ -24,7 +24,7 @@ import com.netflix.dyno.connectionpool.impl.health.ErrorMonitor.ErrorMonitorFact
 public interface ConnectionPoolConfiguration {
 
     enum LoadBalancingStrategy {
-        RoundRobin, TokenAware;
+        RoundRobin, TokenAware
     }
 
     enum CompressionStrategy {

@@ -19,7 +19,6 @@ import com.netflix.dyno.connectionpool.ConnectionPoolConfiguration;
 import com.netflix.dyno.connectionpool.ErrorRateMonitorConfig;
 import com.netflix.dyno.connectionpool.HashPartitioner;
 import com.netflix.dyno.connectionpool.HostSupplier;
-import com.netflix.dyno.connectionpool.RetryPolicy;
 import com.netflix.dyno.connectionpool.RetryPolicy.RetryPolicyFactory;
 import com.netflix.dyno.connectionpool.TokenMapSupplier;
 import com.netflix.dyno.connectionpool.impl.health.ErrorMonitor.ErrorMonitorFactory;
@@ -81,7 +80,7 @@ public class ConnectionPoolConfigurationImpl implements ConnectionPoolConfigurat
 
     // Dual Write Settings
     private boolean isDualWriteEnabled = DEFAULT_IS_DUAL_WRITE_ENABLED;
-    private String dualWriteClusterName = null;
+    private String dualWriteClusterName;
     private int dualWritePercentage = DEFAULT_DUAL_WRITE_PERCENTAGE;
     private int healthTrackerDelayMillis = DEFAULT_HEALTH_TRACKER_DELAY_MILLIS;
     private int poolReconnectWaitMillis = DEFAULT_POOL_RECONNECT_WAIT_MILLIS;
@@ -91,13 +90,7 @@ public class ConnectionPoolConfigurationImpl implements ConnectionPoolConfigurat
     private String connectionPoolConsistency = UNSET_CONNECTION_POOL_CONSISTENCY;
 
 
-    private RetryPolicyFactory retryFactory = new RetryPolicyFactory() {
-
-        @Override
-        public RetryPolicy getRetryPolicy() {
-            return new RunOnce();
-        }
-    };
+    private RetryPolicyFactory retryFactory = RunOnce::new;
 
     private ErrorMonitorFactory errorMonitorFactory = new SimpleErrorMonitorFactory();
 
@@ -150,7 +143,7 @@ public class ConnectionPoolConfigurationImpl implements ConnectionPoolConfigurat
 
     @Override
     public boolean isConnectionPoolConsistencyProvided() {
-        return !(this.connectionPoolConsistency.compareTo(UNSET_CONNECTION_POOL_CONSISTENCY) == 0);
+        return this.connectionPoolConsistency.compareTo(UNSET_CONNECTION_POOL_CONSISTENCY) != 0;
     }
 
     @Override
@@ -486,7 +479,7 @@ public class ConnectionPoolConfigurationImpl implements ConnectionPoolConfigurat
         int checkFrequency = 1;
         int suppressWindow = 90;
 
-        private List<ErrorThreshold> thresholds = new ArrayList<ErrorThreshold>();
+        private List<ErrorThreshold> thresholds = new ArrayList<>();
 
         public ErrorRateMonitorConfigImpl() {
             this.addThreshold(10, 10, 80);

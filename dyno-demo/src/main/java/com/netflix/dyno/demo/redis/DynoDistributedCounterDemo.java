@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DynoDistributedCounterDemo extends DynoJedisDemo {
 
-    private final List<DynoCounter> counters = new ArrayList<DynoCounter>();
+    private final List<DynoCounter> counters = new ArrayList<>();
 
     public DynoDistributedCounterDemo(String clusterName, String localDC) {
         super(clusterName, localDC);
@@ -115,44 +114,40 @@ public class DynoDistributedCounterDemo extends DynoJedisDemo {
 
         for (int i = 0; i < numWriters; i++) {
 
-            threadPool.submit(new Callable<Void>() {
+            threadPool.submit(() -> {
+                int localCount = 0;
+                while (!stop.get() && (localCount < ops || ops == -1)) {
+                    try {
+                        int index = random.nextInt(numCounters);
 
-                @Override
-                public Void call() throws Exception {
-                    int localCount = 0;
-                    while (!stop.get() && (localCount < ops || ops == -1)) {
-                        try {
-                            int index = random.nextInt(numCounters);
+                        DynoCounter counter = counters.get(index);
 
-                            DynoCounter counter = counters.get(index);
+                        counter.incr();
+                        success.incrementAndGet();
 
-                            counter.incr();
-                            success.incrementAndGet();
-
-                            // If we are pipelining, sync every 10000 increments
-                            if (++localCount % 10000 == 0 &&
-                                    counter instanceof DynoJedisPipelineCounter) {
-                                System.out.println("WRITE - sync() " + Thread.currentThread().getName());
-                                ((DynoJedisPipelineCounter) counter).sync();
-                            }
-                        } catch (Exception e) {
-                            System.out.println("WRITE FAILURE: " + Thread.currentThread().getName() + ": " + e.getMessage());
-                            e.printStackTrace();
-                            failure.incrementAndGet();
-                        }
-                    }
-
-                    for (DynoCounter counter : counters) {
-                        if (counter instanceof DynoJedisPipelineCounter) {
-                            System.out.println(Thread.currentThread().getName() + " => localCount = " + localCount);
+                        // If we are pipelining, sync every 10000 increments
+                        if (++localCount % 10000 == 0 &&
+                                counter instanceof DynoJedisPipelineCounter) {
+                            System.out.println("WRITE - sync() " + Thread.currentThread().getName());
                             ((DynoJedisPipelineCounter) counter).sync();
                         }
+                    } catch (Exception e) {
+                        System.out.println("WRITE FAILURE: " + Thread.currentThread().getName() + ": " + e.getMessage());
+                        e.printStackTrace();
+                        failure.incrementAndGet();
                     }
-
-                    latch.countDown();
-                    System.out.println(Thread.currentThread().getName() + " => Done writes");
-                    return null;
                 }
+
+                for (DynoCounter counter : counters) {
+                    if (counter instanceof DynoJedisPipelineCounter) {
+                        System.out.println(Thread.currentThread().getName() + " => localCount = " + localCount);
+                        ((DynoJedisPipelineCounter) counter).sync();
+                    }
+                }
+
+                latch.countDown();
+                System.out.println(Thread.currentThread().getName() + " => Done writes");
+                return null;
             });
 
         }
@@ -168,28 +163,25 @@ public class DynoDistributedCounterDemo extends DynoJedisDemo {
                               final AtomicInteger failure,
                               final AtomicInteger emptyReads) {
 
-        threadPool.submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
+        threadPool.submit(() -> {
 
-                if (counters != null && counters.get(0) instanceof DynoJedisPipelineCounter) {
-                    latch.countDown();
-                    return null;
-                }
-
-                while (!stop.get()) {
-                    long result = 0L;
-
-                    for (DynoCounter counter : counters) {
-                        result += counter.get();
-                    }
-
-                    System.out.println("counter value ==> " + result);
-                    Thread.sleep(1000);
-                }
+            if (counters != null && counters.get(0) instanceof DynoJedisPipelineCounter) {
                 latch.countDown();
                 return null;
             }
+
+            while (!stop.get()) {
+                long result = 0L;
+
+                for (DynoCounter counter : counters) {
+                    result += counter.get();
+                }
+
+                System.out.println("counter value ==> " + result);
+                Thread.sleep(1000);
+            }
+            latch.countDown();
+            return null;
         });
     }
 

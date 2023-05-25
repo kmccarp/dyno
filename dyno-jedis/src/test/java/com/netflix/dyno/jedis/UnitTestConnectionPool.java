@@ -24,7 +24,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -56,72 +55,55 @@ public class UnitTestConnectionPool implements ConnectionPool<Jedis> {
 
         this.config = config;
         this.opMonitor = opMonitor;
-        this.redis_data = new HashMap<String, String>();
+        this.redis_data = new HashMap<>();
 
-        when(client.set(anyString(), anyString())).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                String key = (String) invocation.getArguments()[0];
-                String value = (String) invocation.getArguments()[1];
-                redis_data.put(key, value);
-                return "OK";
-            }
+        when(client.set(anyString(), anyString())).thenAnswer(invocation -> {
+            String key = (String) invocation.getArguments()[0];
+            String value = (String) invocation.getArguments()[1];
+            redis_data.put(key, value);
+            return "OK";
         });
 
-        when(client.get(anyString())).thenAnswer(new Answer<String>() {
-
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                String key = (String) invocation.getArguments()[0];
-                return redis_data.get(key);
-            }
+        when(client.get(anyString())).thenAnswer(invocation -> {
+            String key = (String) invocation.getArguments()[0];
+            return redis_data.get(key);
         });
 
-        when(client.del(anyString())).thenAnswer(new Answer<Long>() {
+        when(client.del(anyString())).thenAnswer(invocation -> {
+            String key = (String) invocation.getArguments()[0];
+            if (redis_data.remove(key) != null) {
+                return (long) 1;
+            }
+            return (long) 0;
+        });
 
-            @Override
-            public Long answer(InvocationOnMock invocation) throws Throwable {
-                String key = (String) invocation.getArguments()[0];
-                if (redis_data.remove(key) != null) {
-                    return (long) 1;
+        when(client.hmset(anyString(), anyMap())).thenAnswer(invocation -> {
+            Map<String, String> map = (Map<String, String>) invocation.getArguments()[1];
+            if (map != null) {
+                if (map.containsKey(CommandTest.KEY_1KB)) {
+                    return "OK";
                 }
-                return (long) 0;
+            } else {
+                throw new RuntimeException("Map is NULL");
             }
+
+            return "OK";
         });
 
-        when(client.hmset(anyString(), anyMap())).thenAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                Map<String, String> map = (Map<String, String>) invocation.getArguments()[1];
-                if (map != null) {
-                    if (map.containsKey(CommandTest.KEY_1KB)) {
-                        return "OK";
-                    }
-                } else {
-                    throw new RuntimeException("Map is NULL");
-                }
+        when(client.mget(Matchers.<String>anyVararg())).thenAnswer(invocation -> {
 
-                return "OK";
+            // Get the keys passed
+            Object[] keys = invocation.getArguments();
+
+            List<String> values = new ArrayList<>(10);
+            for (int i = 0; i < keys.length; i++) {
+                // get the ith key, find the value in redis_data
+                // if found, return that else return nil
+                String key = (String) keys[i];
+                String value = redis_data.get(key);
+                values.add(i, value);
             }
-        });
-
-        when(client.mget(Matchers.<String>anyVararg())).thenAnswer(new Answer<List<String>>() {
-            @Override
-            public List<String> answer(InvocationOnMock invocation) throws Throwable {
-
-                // Get the keys passed
-                Object[] keys = invocation.getArguments();
-
-                List<String> values = new ArrayList<String>(10);
-                for (int i = 0; i < keys.length; i++) {
-                    // get the ith key, find the value in redis_data
-                    // if found, return that else return nil
-                    String key = (String) keys[i];
-                    String value = redis_data.get(key);
-                    values.add(i, value);
-                }
-                return values;
-            }
+            return values;
         });
 
     }
@@ -176,7 +158,7 @@ public class UnitTestConnectionPool implements ConnectionPool<Jedis> {
         try {
             R r = op.execute(client, context);
             opMonitor.recordSuccess(op.getName());
-            return new OperationResultImpl<R>("Test", r, null);
+            return new OperationResultImpl<>("Test", r, null);
         } finally {
             context.reset();
         }

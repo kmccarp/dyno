@@ -134,7 +134,7 @@ public class BinarySearchTokenMapperTest {
          cqlsh:dyno_bootstrap>
          */
 
-        List<HostToken> tokens = new ArrayList<HostToken>();
+        List<HostToken> tokens = new ArrayList<>();
 
         tokens.add(new HostToken(309687905L, new HostBuilder().setHostname("h1").setPort(-1).setRack("r1").setStatus(Status.Up).createHost()));
         tokens.add(new HostToken(1383429731L, new HostBuilder().setHostname("h2").setPort(-1).setRack("r1").setStatus(Status.Up).createHost()));

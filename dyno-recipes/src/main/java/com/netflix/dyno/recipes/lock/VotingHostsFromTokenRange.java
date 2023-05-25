@@ -25,15 +25,15 @@ public class VotingHostsFromTokenRange implements VotingHostsSelector {
     private final TokenMapSupplier tokenMapSupplier;
     private final HostSupplier hostSupplier;
     private final CircularList<Host> votingHosts = new CircularList<>(new ArrayList<>());
-    private final int MIN_VOTING_SIZE = 1;
-    private final int MAX_VOTING_SIZE = 5;
+    private final int minVotingSize = 1;
+    private final int maxVotingSize = 5;
     private final int effectiveVotingSize;
     private final AtomicInteger calculatedVotingSize = new AtomicInteger(0);
 
     public VotingHostsFromTokenRange(HostSupplier hostSupplier, TokenMapSupplier tokenMapSupplier, int votingSize) {
         this.tokenMapSupplier = tokenMapSupplier;
         this.hostSupplier = hostSupplier;
-        effectiveVotingSize = votingSize == -1 ? MAX_VOTING_SIZE : votingSize;
+        effectiveVotingSize = votingSize == -1 ? maxVotingSize : votingSize;
         if(votingSize % 2 == 0) {
             throw new IllegalStateException("Cannot perform voting with even number of hosts");
         }
@@ -47,8 +47,8 @@ public class VotingHostsFromTokenRange implements VotingHostsSelector {
                 throw new IllegalStateException("Cannot do voting with even number of nodes for voting");
             }
             List<HostToken> allHostTokens = tokenMapSupplier.getTokens(ImmutableSet.copyOf(hostSupplier.getHosts()));
-            if (allHostTokens.size() < MIN_VOTING_SIZE) {
-                throw new IllegalStateException(String.format("Cannot perform voting with less than %d nodes", MIN_VOTING_SIZE));
+            if (allHostTokens.size() < minVotingSize) {
+                throw new IllegalStateException(String.format("Cannot perform voting with less than %d nodes", minVotingSize));
             }
             // Total number of hosts present per rack
             Map<String, Long> numHostsPerRack = allHostTokens.stream().map(ht -> ht.getHost().getRack()).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
@@ -78,7 +78,7 @@ public class VotingHostsFromTokenRange implements VotingHostsSelector {
                         temp.sort(HostToken::compareTo);
                         return temp.subList(0, numHosts.get(e.getKey())).stream();
                     })
-                    .map(ht -> ht.getHost())
+                    .map(HostToken::getHost)
                     .collect(Collectors.toList());
             votingHosts.swapWithList(finalVotingHosts);
         }

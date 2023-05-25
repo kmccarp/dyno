@@ -50,7 +50,7 @@ public class ExtendHost extends CommandHost<LockResource> {
                 }
                 String result = client.eval(cmdScript, 1, value, randomKey, String.valueOf(lockResource.getTtlMs()))
                         .toString();
-                if (result.equals("OK")) {
+                if ("OK".equals(result)) {
                     lockResource.incrementLocked();
                     latch.countDown();
                 }

@@ -63,14 +63,14 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
     private final ConnectionPoolMonitor cpMonitor;
 
     // the cached pipeline
-    private volatile Pipeline jedisPipeline = null;
+    private volatile Pipeline jedisPipeline;
     // the cached row key for the pipeline. all subsequent requests to pipeline
     // must be the same. this is used to check that.
-    private final AtomicReference<String> theKey = new AtomicReference<String>(null);
-    private final AtomicReference<byte[]> theBinaryKey = new AtomicReference<byte[]>(null);
-    private final AtomicReference<String> hashtag = new AtomicReference<String>(null);
+    private final AtomicReference<String> theKey = new AtomicReference<>(null);
+    private final AtomicReference<byte[]> theBinaryKey = new AtomicReference<>(null);
+    private final AtomicReference<String> hashtag = new AtomicReference<>(null);
     // used for tracking errors
-    private final AtomicReference<DynoException> pipelineEx = new AtomicReference<DynoException>(null);
+    private final AtomicReference<DynoException> pipelineEx = new AtomicReference<>(null);
 
     private static final String DynoPipeline = "DynoPipeline";
 
@@ -348,13 +348,8 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
         @Override
         public List<String> get() {
-            return new ArrayList<String>(
-                    CollectionUtils.transform(response.get(), new CollectionUtils.Transform<String, String>() {
-                        @Override
-                        public String get(String s) {
-                            return decompressValue(s);
-                        }
-                    }));
+            return new ArrayList<>(
+                    CollectionUtils.transform(response.get(), s -> decompressValue(s)));
         }
     }
 
@@ -389,12 +384,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
         @Override
         public Map<String, String> get() {
             return CollectionUtils.transform(response.get(),
-                    new CollectionUtils.MapEntryTransform<String, String, String>() {
-                        @Override
-                        public String get(String key, String val) {
-                            return decompressValue(val);
-                        }
-                    });
+                    (key, val) -> decompressValue(val));
         }
     }
 
@@ -414,12 +404,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
         @Override
         public Map<byte[], byte[]> get() {
             return CollectionUtils.transform(response.get(),
-                    new CollectionUtils.MapEntryTransform<byte[], byte[], byte[]>() {
-                        @Override
-                        public byte[] get(byte[] key, byte[] val) {
-                            return decompressValue(val);
-                        }
-                    });
+                    (key, val) -> decompressValue(val));
         }
 
     }
@@ -663,12 +648,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<String>() {
                 @Override
                 Response<String> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineResponse(null).apply(new Func0<Response<String>>() {
-                        @Override
-                        public Response<String> call() {
-                            return jedisPipeline.get(key);
-                        }
-                    });
+                    return new PipelineResponse(null).apply(() -> jedisPipeline.get(key));
                 }
             }.execute(key, OpName.GET);
         }
@@ -712,12 +692,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<String>() {
                 @Override
                 Response<String> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineResponse(null).apply(new Func0<Response<String>>() {
-                        @Override
-                        public Response<String> call() {
-                            return jedisPipeline.getSet(key, compressValue(value));
-                        }
-                    });
+                    return new PipelineResponse(null).apply(() -> jedisPipeline.getSet(key, compressValue(value)));
                 }
             }.execute(key, OpName.GETSET);
         }
@@ -760,12 +735,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<String>() {
                 @Override
                 Response<String> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineResponse(null).apply(new Func0<Response<String>>() {
-                        @Override
-                        public Response<String> call() {
-                            return jedisPipeline.hget(key, field);
-                        }
-                    });
+                    return new PipelineResponse(null).apply(() -> jedisPipeline.hget(key, field));
                 }
             }.execute(key, OpName.HGET);
         }
@@ -788,12 +758,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<byte[]>() {
                 @Override
                 Response<byte[]> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineBinaryResponse(null).apply(new Func0<Response<byte[]>>() {
-                        @Override
-                        public Response<byte[]> call() {
-                            return jedisPipeline.hget(key, field);
-                        }
-                    });
+                    return new PipelineBinaryResponse(null).apply(() -> jedisPipeline.hget(key, field));
                 }
             }.execute(key, OpName.HGET);
         }
@@ -837,12 +802,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<Map<byte[], byte[]>>() {
                 @Override
                 Response<Map<byte[], byte[]>> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineBinaryMapResponse(null).apply(new Func0<Response<Map<byte[], byte[]>>>() {
-                        @Override
-                        public Response<Map<byte[], byte[]>> call() {
-                            return jedisPipeline.hgetAll(key);
-                        }
-                    });
+                    return new PipelineBinaryMapResponse(null).apply(() -> jedisPipeline.hgetAll(key));
                 }
             }.execute(key, OpName.HGETALL);
         }
@@ -939,12 +899,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
                 Response<List<String>> execute(final Pipeline jedisPipeline) throws DynoException {
                     long startTime = System.nanoTime() / 1000;
                     try {
-                        return new PipelineListResponse(null).apply(new Func0<Response<List<String>>>() {
-                            @Override
-                            public Response<List<String>> call() {
-                                return jedisPipeline.hmget(key, fields);
-                            }
-                        });
+                        return new PipelineListResponse(null).apply(() -> jedisPipeline.hmget(key, fields));
                     } finally {
                         long duration = System.nanoTime() / 1000 - startTime;
                         opMonitor.recordSendLatency(OpName.HMGET.name(), duration, TimeUnit.MICROSECONDS);
@@ -977,18 +932,8 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<String>() {
                 @Override
                 Response<String> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineResponse(null).apply(new Func0<Response<String>>() {
-                        @Override
-                        public Response<String> call() {
-                            return jedisPipeline.hmset(key, CollectionUtils.transform(hash,
-                                    new CollectionUtils.MapEntryTransform<byte[], byte[], byte[]>() {
-                                        @Override
-                                        public byte[] get(byte[] key, byte[] val) {
-                                            return compressValue(val);
-                                        }
-                                    }));
-                        }
-                    });
+                    return new PipelineResponse(null).apply(() -> jedisPipeline.hmset(key, CollectionUtils.transform(hash,
+                            (key, val) -> compressValue(val))));
                 }
             }.execute(key, OpName.HMSET);
         }
@@ -1013,18 +958,8 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<String>() {
                 @Override
                 Response<String> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineResponse(null).apply(new Func0<Response<String>>() {
-                        @Override
-                        public Response<String> call() {
-                            return jedisPipeline.hmset(key, CollectionUtils.transform(hash,
-                                    new CollectionUtils.MapEntryTransform<String, String, String>() {
-                                        @Override
-                                        public String get(String key, String val) {
-                                            return compressValue(val);
-                                        }
-                                    }));
-                        }
-                    });
+                    return new PipelineResponse(null).apply(() -> jedisPipeline.hmset(key, CollectionUtils.transform(hash,
+                            (key, val) -> compressValue(val))));
                 }
             }.execute(key, OpName.HMSET);
         }
@@ -1044,12 +979,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<Long>() {
                 @Override
                 Response<Long> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineLongResponse(null).apply(new Func0<Response<Long>>() {
-                        @Override
-                        public Response<Long> call() {
-                            return jedisPipeline.hset(key, field, compressValue(value));
-                        }
-                    });
+                    return new PipelineLongResponse(null).apply(() -> jedisPipeline.hset(key, field, compressValue(value)));
                 }
             }.execute(key, OpName.HSET);
         }
@@ -1076,12 +1006,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<Long>() {
                 @Override
                 Response<Long> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineLongResponse(null).apply(new Func0<Response<Long>>() {
-                        @Override
-                        public Response<Long> call() {
-                            return jedisPipeline.hset(key, field, compressValue(value));
-                        }
-                    });
+                    return new PipelineLongResponse(null).apply(() -> jedisPipeline.hset(key, field, compressValue(value)));
                 }
             }.execute(key, OpName.HSET);
         }
@@ -1105,12 +1030,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<Long>() {
                 @Override
                 Response<Long> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineLongResponse(null).apply(new Func0<Response<Long>>() {
-                        @Override
-                        public Response<Long> call() {
-                            return jedisPipeline.hsetnx(key, field, compressValue(value));
-                        }
-                    });
+                    return new PipelineLongResponse(null).apply(() -> jedisPipeline.hsetnx(key, field, compressValue(value)));
                 }
             }.execute(key, OpName.HSETNX);
         }
@@ -1129,12 +1049,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<List<String>>() {
                 @Override
                 Response<List<String>> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineListResponse(null).apply(new Func0<Response<List<String>>>() {
-                        @Override
-                        public Response<List<String>> call() {
-                            return jedisPipeline.hvals(key);
-                        }
-                    });
+                    return new PipelineListResponse(null).apply(() -> jedisPipeline.hvals(key));
                 }
             }.execute(key, OpName.HVALS);
         }
@@ -1464,12 +1379,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
                 Response<String> execute(final Pipeline jedisPipeline) throws DynoException {
                     long startTime = System.nanoTime() / 1000;
                     try {
-                        return new PipelineResponse(null).apply(new Func0<Response<String>>() {
-                            @Override
-                            public Response<String> call() {
-                                return jedisPipeline.set(key, compressValue(value));
-                            }
-                        });
+                        return new PipelineResponse(null).apply(() -> jedisPipeline.set(key, compressValue(value)));
                     } finally {
                         long duration = System.nanoTime() / 1000 - startTime;
                         opMonitor.recordSendLatency(OpName.SET.name(), duration, TimeUnit.MICROSECONDS);
@@ -1505,12 +1415,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
             return new PipelineCompressionOperation<String>() {
                 @Override
                 Response<String> execute(final Pipeline jedisPipeline) throws DynoException {
-                    return new PipelineResponse(null).apply(new Func0<Response<String>>() {
-                        @Override
-                        public Response<String> call() {
-                            return jedisPipeline.setex(key, seconds, compressValue(value));
-                        }
-                    });
+                    return new PipelineResponse(null).apply(() -> jedisPipeline.setex(key, seconds, compressValue(value)));
                 }
             }.execute(key, OpName.SETEX);
         }
