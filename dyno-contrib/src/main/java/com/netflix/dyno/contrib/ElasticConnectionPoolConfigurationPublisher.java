@@ -51,7 +51,7 @@ public class ElasticConnectionPoolConfigurationPublisher implements ConnectionPo
     private static final String DESTINATION = "http://%s:7104/clientinfo/dyno";
 
     public ElasticConnectionPoolConfigurationPublisher(String applicationName, String clusterName, String vip,
-                                                       ConnectionPoolConfiguration config) {
+                                                        ConnectionPoolConfiguration config) {
         this.applicationName = applicationName;
         this.clusterName = clusterName;
         this.vip = vip;
@@ -96,12 +96,14 @@ public class ElasticConnectionPoolConfigurationPublisher implements ConnectionPo
         }
 
         // jar version
-        Set<String> jars = new HashSet<String>() {{
-            add("dyno-core");
-            add("dyno-contrib");
-            add("dyno-jedis");
-            add("dyno-reddison");
-        }};
+        Set<String> jars = new HashSet<String>() {
+            {
+                add("dyno-core");
+                add("dyno-contrib");
+                add("dyno-jedis");
+                add("dyno-reddison");
+            }
+        };
 
         json.put("Versions", new JSONObject(getLibraryVersion(this.getClass(), jars)));
 

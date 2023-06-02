@@ -51,7 +51,7 @@ public class SimpleAsyncConnectionPoolImpl<CL> implements HostConnectionPool<CL>
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
 
     public SimpleAsyncConnectionPoolImpl(Host host, ConnectionFactory<CL> cFactory,
-                                         ConnectionPoolConfiguration config, ConnectionPoolMonitor monitor) {
+                                          ConnectionPoolConfiguration config, ConnectionPoolMonitor monitor) {
 
         this.host = host;
         this.connFactory = cFactory;

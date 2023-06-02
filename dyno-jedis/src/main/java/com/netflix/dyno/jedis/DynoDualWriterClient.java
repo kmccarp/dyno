@@ -60,21 +60,21 @@ public class DynoDualWriterClient extends DynoJedisClient {
     private final AtomicReference<DynoJedisPipelineMonitor> pipelineMonitor = new AtomicReference<>();
 
     public DynoDualWriterClient(String name, String clusterName,
-                                ConnectionPool<Jedis> pool,
-                                DynoOPMonitor operationMonitor,
-                                ConnectionPoolMonitor connectionPoolMonitor,
-                                DynoJedisClient shadowClient) {
+                                 ConnectionPool<Jedis> pool,
+                                 DynoOPMonitor operationMonitor,
+                                 ConnectionPoolMonitor connectionPoolMonitor,
+                                 DynoJedisClient shadowClient) {
 
         this(name, clusterName, pool, operationMonitor, connectionPoolMonitor, shadowClient,
                 new TimestampDial(pool.getConfiguration().getDualWritePercentage()));
     }
 
     public DynoDualWriterClient(String name, String clusterName,
-                                ConnectionPool<Jedis> pool,
-                                DynoOPMonitor operationMonitor,
-                                ConnectionPoolMonitor connectionPoolMonitor,
-                                DynoJedisClient shadowClient,
-                                Dial dial) {
+                                 ConnectionPool<Jedis> pool,
+                                 DynoOPMonitor operationMonitor,
+                                 ConnectionPoolMonitor connectionPoolMonitor,
+                                 DynoJedisClient shadowClient,
+                                 Dial dial) {
         super(name, clusterName, pool, operationMonitor, connectionPoolMonitor);
         this.appName = name;
         this.connPool = pool;

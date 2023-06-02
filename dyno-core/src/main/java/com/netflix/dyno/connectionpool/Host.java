@@ -192,12 +192,12 @@ public class Host implements Comparable<Host> {
 
     public static Host clone(Host host) {
         return new HostBuilder().setHostname(host.getHostName())
-                        .setIpAddress(host.getIpAddress()).setPort(host.getPort())
-                        .setSecurePort(host.getSecurePort())
-                        .setRack(host.getRack())
-                        .setDatastorePort(host.getDatastorePort())
-                        .setDatacenter(host.getDatacenter()).setStatus(host.getStatus())
-                        .setHashtag(host.getHashtag())
-                        .setPassword(host.getPassword()).createHost();
+                .setIpAddress(host.getIpAddress()).setPort(host.getPort())
+                .setSecurePort(host.getSecurePort())
+                .setRack(host.getRack())
+                .setDatastorePort(host.getDatastorePort())
+                .setDatacenter(host.getDatacenter()).setStatus(host.getStatus())
+                .setHashtag(host.getHashtag())
+                .setPassword(host.getPassword()).createHost();
     }
 }

@@ -84,7 +84,7 @@ public class HostConnectionPoolImpl<CL> implements HostConnectionPool<CL> {
     private final AtomicReference<ConnectionPoolState<CL>> cpState = new AtomicReference<ConnectionPoolState<CL>>(cpNotInited);
 
     public HostConnectionPoolImpl(Host host, ConnectionFactory<CL> conFactory,
-                                  ConnectionPoolConfiguration cpConfig, ConnectionPoolMonitor poolMonitor) {
+                                   ConnectionPoolConfiguration cpConfig, ConnectionPoolMonitor poolMonitor) {
         this.host = host;
         this.connFactory = conFactory;
         this.cpConfig = cpConfig;
@@ -318,9 +318,9 @@ public class HostConnectionPoolImpl<CL> implements HostConnectionPool<CL> {
 
                 return connection;
             } catch (DynoConnectException e) {
-				/* adding error log under debug flag to avoid flooding log lines
-				   while debugging specific error scenarios.
-				 */
+                /* adding error log under debug flag to avoid flooding log lines
+                   while debugging specific error scenarios.
+                 */
                 if (Logger.isDebugEnabled()) {
                     if (monitor.getConnectionCreateFailedCount() % 10000 == 0) {
                         Logger.error("Failed to create connection", e);

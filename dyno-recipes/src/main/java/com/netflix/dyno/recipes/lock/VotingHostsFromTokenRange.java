@@ -34,7 +34,7 @@ public class VotingHostsFromTokenRange implements VotingHostsSelector {
         this.tokenMapSupplier = tokenMapSupplier;
         this.hostSupplier = hostSupplier;
         effectiveVotingSize = votingSize == -1 ? MAX_VOTING_SIZE : votingSize;
-        if(votingSize % 2 == 0) {
+        if (votingSize % 2 == 0) {
             throw new IllegalStateException("Cannot perform voting with even number of hosts");
         }
         getVotingHosts();
@@ -43,7 +43,7 @@ public class VotingHostsFromTokenRange implements VotingHostsSelector {
     @Override
     public CircularList<Host> getVotingHosts() {
         if (votingHosts.getSize() == 0) {
-            if(effectiveVotingSize % 2 == 0) {
+            if (effectiveVotingSize % 2 == 0) {
                 throw new IllegalStateException("Cannot do voting with even number of nodes for voting");
             }
             List<HostToken> allHostTokens = tokenMapSupplier.getTokens(ImmutableSet.copyOf(hostSupplier.getHosts()));
@@ -57,14 +57,14 @@ public class VotingHostsFromTokenRange implements VotingHostsSelector {
             Map<String, Integer> numHosts = new HashMap<>();
             // Sort racks to get the same order
             List<String> racks = numHostsPerRack.keySet().stream().sorted(Comparator.comparing(String::toString)).collect(Collectors.toList());
-            for(String rack: racks) {
+            for (String rack : racks) {
                 // Take as many hosts as you can from this rack.
                 int v = (int) Math.min(numHostsRequired.get(), numHostsPerRack.get(rack));
                 numHostsRequired.addAndGet(-v);
                 numHosts.put(rack, v);
                 calculatedVotingSize.addAndGet(v);
             }
-            if(calculatedVotingSize.get() % 2 == 0) {
+            if (calculatedVotingSize.get() % 2 == 0) {
                 throw new IllegalStateException("Could not construct voting pool. Min number of hosts not met!");
             }
             Map<String, List<HostToken>> rackToHostToken = allHostTokens.stream()

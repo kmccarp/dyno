@@ -151,7 +151,7 @@ public class TokenAwareSelectionBinaryTest {
     }
 
     private void runTest(long start, long end, Map<String, Integer> result,
-                         TokenAwareSelection<Integer> tokenAwareSelector) {
+                          TokenAwareSelection<Integer> tokenAwareSelector) {
 
         for (long i = start; i <= end; i++) {
 
@@ -171,7 +171,7 @@ public class TokenAwareSelectionBinaryTest {
     }
 
     private void runTestWithPorts(long start, long end, Map<Integer, Integer> result,
-                                  TokenAwareSelection<Integer> tokenAwareSelector) {
+                                   TokenAwareSelection<Integer> tokenAwareSelector) {
 
         for (long i = start; i <= end; i++) {
 

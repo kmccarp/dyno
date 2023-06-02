@@ -208,7 +208,7 @@ public class RedisAuthenticationIntegrationTest {
     }
 
     private DynoJedisClient constructJedisClient(TokenMapSupplier tokenMapSupplier,
-                                                 HostSupplier hostSupplier) {
+                                                  HostSupplier hostSupplier) {
 
         final ConnectionPoolConfigurationImpl connectionPoolConfiguration =
                 new ConnectionPoolConfigurationImpl(REDIS_RACK);

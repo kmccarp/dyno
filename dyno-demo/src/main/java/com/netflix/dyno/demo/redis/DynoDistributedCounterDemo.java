@@ -103,12 +103,12 @@ public class DynoDistributedCounterDemo extends DynoJedisDemo {
 
     @Override
     protected void startWrites(final int ops,
-                               final int numWriters,
-                               final ExecutorService threadPool,
-                               final AtomicBoolean stop,
-                               final CountDownLatch latch,
-                               final AtomicInteger success,
-                               final AtomicInteger failure) {
+                                              final int numWriters,
+                                              final ExecutorService threadPool,
+                                              final AtomicBoolean stop,
+                                              final CountDownLatch latch,
+                                              final AtomicInteger success,
+                                              final AtomicInteger failure) {
 
         final Random random = new Random(System.currentTimeMillis());
         final int numCounters = counters.size() > 1 ? counters.size() - 1 : 1;
@@ -160,13 +160,13 @@ public class DynoDistributedCounterDemo extends DynoJedisDemo {
 
     @Override
     protected void startReads(final int nKeys,
-                              final int numReaders,
-                              final ExecutorService threadPool,
-                              final AtomicBoolean stop,
-                              final CountDownLatch latch,
-                              final AtomicInteger success,
-                              final AtomicInteger failure,
-                              final AtomicInteger emptyReads) {
+                                             final int numReaders,
+                                             final ExecutorService threadPool,
+                                             final AtomicBoolean stop,
+                                             final CountDownLatch latch,
+                                             final AtomicInteger success,
+                                             final AtomicInteger failure,
+                                             final AtomicInteger emptyReads) {
 
         threadPool.submit(new Callable<Void>() {
             @Override

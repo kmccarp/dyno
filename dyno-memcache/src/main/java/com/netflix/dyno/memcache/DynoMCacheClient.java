@@ -22,7 +22,7 @@ package com.netflix.dyno.memcache;
  *
  * @author poberai
  */
-public class DynoMCacheClient { /**implements MemcachedClientIF {
+public class DynoMCacheClient {/**implements MemcachedClientIF {
 
  private final String cacheName;
 

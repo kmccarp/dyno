@@ -111,12 +111,12 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
     private Type poolType;
 
     public ConnectionPoolImpl(ConnectionFactory<CL> cFactory, ConnectionPoolConfiguration cpConfig,
-                              ConnectionPoolMonitor cpMon) {
+                               ConnectionPoolMonitor cpMon) {
         this(cFactory, cpConfig, cpMon, Type.Sync);
     }
 
     public ConnectionPoolImpl(ConnectionFactory<CL> cFactory, ConnectionPoolConfiguration cpConfig,
-                              ConnectionPoolMonitor cpMon, Type type) {
+                               ConnectionPoolMonitor cpMon, Type type) {
         this.connFactory = cFactory;
         this.cpConfiguration = cpConfig;
         this.cpMonitor = cpMon;

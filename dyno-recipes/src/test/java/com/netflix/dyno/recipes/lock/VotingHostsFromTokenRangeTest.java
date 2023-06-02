@@ -73,6 +73,6 @@ public class VotingHostsFromTokenRangeTest {
 
     @Test
     public void getVotingSize() {
-        IntStream.range(1, 6).filter(i -> i%2 != 0).forEach(i -> testVotingSize(i));
+        IntStream.range(1, 6).filter(i -> i % 2 != 0).forEach(i -> testVotingSize(i));
     }
 }

@@ -91,7 +91,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     protected final ConnectionPoolMonitor cpMonitor;
 
     public DynoJedisClient(String name, String clusterName, ConnectionPool<Jedis> pool, DynoOPMonitor operationMonitor,
-                           ConnectionPoolMonitor cpMonitor) {
+                            ConnectionPoolMonitor cpMonitor) {
         this.appName = name;
         this.clusterName = clusterName;
         this.connPool = pool;
@@ -807,7 +807,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
                     new CompressionValueOperation<ScanResult<Map.Entry<String, String>>>(key, OpName.HSCAN) {
                         @Override
                         public ScanResult<Map.Entry<String, String>> execute(final Jedis client,
-                                                                             final ConnectionContext state) {
+                                                                                                               final ConnectionContext state) {
                             return new ScanResult<>(cursor, new ArrayList(CollectionUtils.transform(
                                     client.hscan(key, cursor).getResult(),
                                     new CollectionUtils.Transform<Map.Entry<String, String>, Map.Entry<String, String>>() {
@@ -831,7 +831,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     private List<OperationResult<ScanResult<String>>> scatterGatherScan(final CursorBasedResult<String> cursor,
-                                                                        final int count, final String... pattern) {
+                                                                         final int count, final String... pattern) {
 
         if (!(cursor instanceof TokenRackMapper)) {
             throw new DynoException("cursor does not implement the TokenRackMapper interface");
@@ -1059,7 +1059,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Long> d_linsert(final String key, final ListPosition where, final String pivot,
-                                           final String value) {
+                                            final String value) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Long>(key, OpName.LINSERT) {
 
@@ -1474,7 +1474,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<String> d_set(final String key, final String value, final String nxxx, final String expx,
-                                         final long time) {
+                                          final long time) {
         SetParams setParams = SetParams.setParams();
         if (nxxx.equalsIgnoreCase("NX")) {
             setParams.nx();
@@ -1501,8 +1501,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
                 public String execute(Jedis client, ConnectionContext state) throws DynoException {
                     return client.set(key, value, setParams);
                 }
-            });
-        else {
+            });else {
             return connPool.executeWithFailover(new CompressionValueOperation<String>(key, OpName.SET) {
                 @Override
                 public String execute(final Jedis client, final ConnectionContext state) throws DynoException {
@@ -1920,7 +1919,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Long> d_zadd(final String key, final double score, final String member,
-                                        final ZAddParams params) {
+                                         final ZAddParams params) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Long>(key, OpName.ZADD) {
 
@@ -2226,7 +2225,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<String>> d_zrangeByScore(final String key, final Double min, final Double max,
-                                                        final Integer offset, final Integer count) {
+                                                         final Integer offset, final Integer count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<String>>(key, OpName.ZRANGEBYSCORE) {
 
@@ -2261,7 +2260,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<String>> d_zrangeByScore(final String key, final String min, final String max,
-                                                        final Integer offset, final Integer count) {
+                                                         final Integer offset, final Integer count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<String>>(key, OpName.ZRANGEBYSCORE) {
 
@@ -2279,7 +2278,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<String>> d_zrevrangeByScore(final String key, final Double max, final Double min,
-                                                           final Integer offset, final Integer count) {
+                                                            final Integer offset, final Integer count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<String>>(key, OpName.ZREVRANGEBYSCORE) {
 
@@ -2331,7 +2330,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<Tuple>> d_zrevrangeByScoreWithScores(final String key, final Double max,
-                                                                    final Double min) {
+                                                                     final Double min) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<Tuple>>(key, OpName.ZREVRANGEBYSCOREWITHSCORES) {
 
@@ -2349,7 +2348,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<Tuple>> d_zrangeByScoreWithScores(final String key, final Double min, final Double max,
-                                                                 final Integer offset, final Integer count) {
+                                                                  final Integer offset, final Integer count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<Tuple>>(key, OpName.ZRANGEBYSCOREWITHSCORES) {
 
@@ -2367,7 +2366,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<String>> d_zrevrangeByScore(final String key, final String max, final String min,
-                                                           final Integer offset, final Integer count) {
+                                                            final Integer offset, final Integer count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<String>>(key, OpName.ZREVRANGEBYSCORE) {
 
@@ -2402,7 +2401,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<Tuple>> d_zrevrangeByScoreWithScores(final String key, final String max,
-                                                                    final String min) {
+                                                                     final String min) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<Tuple>>(key, OpName.ZREVRANGEBYSCOREWITHSCORES) {
 
@@ -2420,7 +2419,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<Tuple>> d_zrangeByScoreWithScores(final String key, final String min, final String max,
-                                                                 final Integer offset, final Integer count) {
+                                                                  final Integer offset, final Integer count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<Tuple>>(key, OpName.ZRANGEBYSCOREWITHSCORES) {
 
@@ -2438,7 +2437,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<Tuple>> d_zrevrangeByScoreWithScores(final String key, final Double max,
-                                                                    final Double min, final Integer offset, final Integer count) {
+                                                                     final Double min, final Integer offset, final Integer count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<Tuple>>(key, OpName.ZREVRANGEBYSCOREWITHSCORES) {
 
@@ -2456,7 +2455,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<Tuple>> d_zrevrangeByScoreWithScores(final String key, final String max,
-                                                                    final String min, final Integer offset, final Integer count) {
+                                                                     final String min, final Integer offset, final Integer count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<Tuple>>(key, OpName.ZREVRANGEBYSCOREWITHSCORES) {
 
@@ -2513,7 +2512,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<String>> d_zrangeByLex(final String key, final String min, final String max,
-                                                      final int offset, final int count) {
+                                                       final int offset, final int count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<String>>(key, OpName.ZRANGEBYLEX) {
 
@@ -3143,7 +3142,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<Set<String>> d_zrevrangeByLex(final String key, final String max, final String min,
-                                                         final int offset, final int count) {
+                                                          final int offset, final int count) {
 
         return connPool.executeWithFailover(new BaseKeyOperation<Set<String>>(key, OpName.ZREVRANGEBYLEX) {
 
@@ -4960,7 +4959,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
 
     @Override
     public List<GeoRadiusResponse> georadius(byte[] arg0, double arg1, double arg2, double arg3, GeoUnit arg4,
-                                             GeoRadiusParam arg5) {
+                                                            GeoRadiusParam arg5) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -4981,7 +4980,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
 
     @Override
     public List<GeoRadiusResponse> georadiusByMember(byte[] arg0, byte[] arg1, double arg2, GeoUnit arg3,
-                                                     GeoRadiusParam arg4) {
+                                                                    GeoRadiusParam arg4) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -5097,7 +5096,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
 
     @Override
     public List<GeoRadiusResponse> georadius(String arg0, double arg1, double arg2, double arg3, GeoUnit arg4,
-                                             GeoRadiusParam arg5) {
+                                                            GeoRadiusParam arg5) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -5118,7 +5117,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
 
     @Override
     public List<GeoRadiusResponse> georadiusByMember(String arg0, String arg1, double arg2, GeoUnit arg3,
-                                                     GeoRadiusParam arg4) {
+                                                                    GeoRadiusParam arg4) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 

@@ -35,8 +35,8 @@ public class DynoJedisUtils {
     private static final Logger logger = LoggerFactory.getLogger(DynoJedisClient.class);
 
     public static void updateConnectionPoolConfig(ConnectionPoolConfigurationImpl cpConfig,
-                                                  HostSupplier hostSupplier, TokenMapSupplier tokenMapSupplier,
-                                                  EurekaClient discoveryClient, String clusterName) {
+                                                   HostSupplier hostSupplier, TokenMapSupplier tokenMapSupplier,
+                                                   EurekaClient discoveryClient, String clusterName) {
         if (hostSupplier == null) {
             if (discoveryClient == null) {
                 throw new DynoConnectException("HostSupplier not provided. Cannot initialize EurekaHostsSupplier "
@@ -53,15 +53,15 @@ public class DynoJedisUtils {
     }
 
     public static ConnectionPool<Jedis> createConnectionPool(String appName, DynoOPMonitor opMonitor,
-                                                             ConnectionPoolMonitor cpMonitor, ConnectionPoolConfiguration cpConfig,
-                                                             SSLSocketFactory sslSocketFactory) {
+                                                              ConnectionPoolMonitor cpMonitor, ConnectionPoolConfiguration cpConfig,
+                                                              SSLSocketFactory sslSocketFactory) {
         JedisConnectionFactory connFactory = new JedisConnectionFactory(opMonitor, sslSocketFactory);
 
         return startConnectionPool(appName, connFactory, cpConfig, cpMonitor);
     }
 
     private static ConnectionPool<Jedis> startConnectionPool(String appName, ConnectionFactory connFactory,
-                                                             ConnectionPoolConfiguration cpConfig, ConnectionPoolMonitor cpMonitor) {
+                                                              ConnectionPoolConfiguration cpConfig, ConnectionPoolMonitor cpMonitor) {
 
         final ConnectionPool<Jedis> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
 

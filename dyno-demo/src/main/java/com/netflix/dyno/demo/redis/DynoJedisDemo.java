@@ -159,7 +159,7 @@ public class DynoJedisDemo {
     }
 
     public void initDualClientWithRemoteClustersFromFile(final String primaryHostsFile, final String shadowHostsFile,
-                                                         final int port) throws Exception {
+                                                          final int port) throws Exception {
         final HostSupplier primaryClusterHostSupplier = () -> {
             try {
                 return readHostsFromFile(primaryHostsFile, port);
@@ -182,7 +182,7 @@ public class DynoJedisDemo {
     }
 
     public void initDualClientWithRemoteClustersFromEurekaUrl(final String primaryClusterName,
-                                                              final String shadowClusterName) {
+                                                               final String shadowClusterName) {
         final HostSupplier primaryClusterHostSupplier = () -> getHostsFromDiscovery(primaryClusterName);
         final HostSupplier shadowClusterHostSupplier = () -> getHostsFromDiscovery(shadowClusterName);
 
@@ -190,7 +190,7 @@ public class DynoJedisDemo {
     }
 
     public void initDualWriterDemo(HostSupplier primaryClusterHostSupplier, HostSupplier shadowClusterHostSupplier,
-                                   TokenMapSupplier primaryTokenSupplier, TokenMapSupplier shadowTokenSupplier) {
+                                    TokenMapSupplier primaryTokenSupplier, TokenMapSupplier shadowTokenSupplier) {
         this.client = new DynoJedisClient.Builder()
                 .withApplicationName("demo")
                 .withDynomiteClusterName("dyno-dev")
@@ -227,7 +227,7 @@ public class DynoJedisDemo {
     }
 
     public void initDynoLockClient(HostSupplier hostSupplier, TokenMapSupplier tokenMapSupplier, String appName,
-                                   String clusterName) {
+                                    String clusterName) {
         dynoLockClient = new DynoLockClient.Builder().withApplicationName(appName)
                 .withDynomiteClusterName(clusterName)
                 .withTimeoutUnit(TimeUnit.MILLISECONDS)
@@ -580,8 +580,8 @@ public class DynoJedisDemo {
     }
 
     protected void startWrites(final int nKeys, final int numWriters, final ExecutorService threadPool,
-                               final AtomicBoolean stop, final CountDownLatch latch, final AtomicInteger success,
-                               final AtomicInteger failure) {
+                                final AtomicBoolean stop, final CountDownLatch latch, final AtomicInteger success,
+                                final AtomicInteger failure) {
 
         for (int i = 0; i < numWriters; i++) {
 
@@ -614,8 +614,8 @@ public class DynoJedisDemo {
     }
 
     protected void startReads(final int nKeys, final int numReaders, final ExecutorService threadPool,
-                              final AtomicBoolean stop, final CountDownLatch latch, final AtomicInteger success,
-                              final AtomicInteger failure, final AtomicInteger emptyReads) {
+                               final AtomicBoolean stop, final CountDownLatch latch, final AtomicInteger success,
+                               final AtomicInteger failure, final AtomicInteger emptyReads) {
 
         for (int i = 0; i < numReaders; i++) {
 

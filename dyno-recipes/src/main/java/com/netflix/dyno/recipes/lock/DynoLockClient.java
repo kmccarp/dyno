@@ -132,7 +132,7 @@ public class DynoLockClient {
         votingHostsSelector.getVotingHosts().getEntireList().stream()
                 .map(host -> new CheckAndRunHost(host, pool, "del", resource, resourceKeyMap.get(resource)))
                 .forEach(ulH -> CompletableFuture.supplyAsync(ulH, service)
-                        .thenAccept(result -> latch.countDown())
+                                .thenAccept(result -> latch.countDown())
                 );
         boolean latchValue = false;
         try {
@@ -164,7 +164,7 @@ public class DynoLockClient {
                 if (extendedValue > 0) {
                     logger.info("Extended lock on {} for {} MS", resource, ttlMS);
                     TimerTask task = getExtensionTask(runJob, resource, ttlMS, extensionFailed);
-                    runJob.schedule(task, extendedValue/2);
+                    runJob.schedule(task, extendedValue / 2);
                     return;
                 }
                 extensionFailed.accept(resource);
@@ -199,7 +199,7 @@ public class DynoLockClient {
         long acquireResult = acquireLock(resource, ttlMS);
         if (acquireResult > 0) {
             Timer runJob = new Timer(resource, true);
-            runJob.schedule(getExtensionTask(runJob, resource, ttlMS, extensionFailedCallback), acquireResult/2);
+            runJob.schedule(getExtensionTask(runJob, resource, ttlMS, extensionFailedCallback), acquireResult / 2);
             return true;
         }
         return false;
@@ -286,17 +286,17 @@ public class DynoLockClient {
             votingHostsSelector.getVotingHosts().getEntireList().stream()
                     .map(host -> new CheckAndRunHost(host, pool, "pttl", resource, resourceKeyMap.get(resource)))
                     .forEach(checkAndRunHost -> CompletableFuture.supplyAsync(checkAndRunHost, service)
-                            .thenAccept(r -> {
-                                String result = r.getResult().toString();
-                                // The lua script returns 0 if we have lost the lock or we get -2 if the ttl expired on
-                                // the key when we checked for the pttl.
-                                if (result.equals("0") || result.equals("-2")) {
-                                    logger.info("Lock not present on host");
-                                } else {
-                                    resultTtls.add(Long.valueOf(result));
-                                    latch.countDown();
-                                }
-                            })
+                                    .thenAccept(r -> {
+                                        String result = r.getResult().toString();
+                                        // The lua script returns 0 if we have lost the lock or we get -2 if the ttl expired on
+                                        // the key when we checked for the pttl.
+                                        if (result.equals("0") || result.equals("-2")) {
+                                            logger.info("Lock not present on host");
+                                        } else {
+                                            resultTtls.add(Long.valueOf(result));
+                                            latch.countDown();
+                                        }
+                                    })
                     );
             boolean latchValue = awaitLatch(latch, resource);
             if (latchValue) {

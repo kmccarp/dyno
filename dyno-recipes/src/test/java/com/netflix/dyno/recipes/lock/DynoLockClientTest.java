@@ -37,7 +37,8 @@ public abstract class DynoLockClientTest {
 
     @Test
     public void testAcquireLockWithExtension() throws InterruptedException {
-        boolean acquireResult = dynoLockClient.acquireLock(resource, 500, (rsc) -> {});
+        boolean acquireResult = dynoLockClient.acquireLock(resource, 500, (rsc) -> {
+        });
         Assert.assertTrue("Failed to acquire lock on resource", acquireResult);
         Thread.sleep(3000);
         Assert.assertTrue(dynoLockClient.checkLock(resource) > 0);
@@ -63,7 +64,7 @@ public abstract class DynoLockClientTest {
         Assert.assertTrue("Acquire lock did not succeed in time", v > 0);
         dynoLockClient.releaseLock(resource);
         v = dynoLockClient.checkLock(resource);
-        Assert.assertTrue("Release lock failed",v == 0);
+        Assert.assertTrue("Release lock failed", v == 0);
     }
 
     @Test
@@ -83,7 +84,7 @@ public abstract class DynoLockClientTest {
         Assert.assertTrue("Acquire lock did not succeed in time", v > 0);
         Assert.assertEquals(1, dynoLockClient.getLockedResources().size());
         v = dynoLockClient.checkLock(resource);
-        Assert.assertTrue("Check lock failed for acquired lock",v > 0);
+        Assert.assertTrue("Check lock failed for acquired lock", v > 0);
         dynoLockClient.releaseLock(resource);
         Assert.assertTrue("Check lock failed for acquired lock", dynoLockClient.checkLock(resource) == 0);
     }
@@ -99,7 +100,7 @@ public abstract class DynoLockClientTest {
 
     @Test
     public void testLockClientConcurrent() {
-        DynoLockClient[] cs = new DynoLockClient[] {constructDynoLockClient(), constructDynoLockClient(), constructDynoLockClient()};
+        DynoLockClient[] cs = new DynoLockClient[]{constructDynoLockClient(), constructDynoLockClient(), constructDynoLockClient()};
         CopyOnWriteArrayList<DynoLockClient> clients = new CopyOnWriteArrayList<>(cs);
         List<Long> ttls = Arrays.asList(new Long[]{1000L, 500L, 250L});
         AtomicInteger count = new AtomicInteger(3);
@@ -124,9 +125,9 @@ public abstract class DynoLockClientTest {
             }
         });
         boolean lock = false;
-        for(Long r: resultList) {
-            if(r > 0) {
-                if(lock) {
+        for (Long r : resultList) {
+            if (r > 0) {
+                if (lock) {
                     Assert.fail("Lock did not work as expected " + Arrays.toString(resultList.toArray()));
                 }
                 lock = true;

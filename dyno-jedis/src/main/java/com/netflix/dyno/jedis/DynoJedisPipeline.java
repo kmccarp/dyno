@@ -75,7 +75,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
     private static final String DynoPipeline = "DynoPipeline";
 
     DynoJedisPipeline(ConnectionPoolImpl<Jedis> cPool, DynoJedisPipelineMonitor operationMonitor,
-                      ConnectionPoolMonitor connPoolMonitor) {
+                       ConnectionPoolMonitor connPoolMonitor) {
         this.connPool = cPool;
         this.opMonitor = operationMonitor;
         this.cpMonitor = connPoolMonitor;
@@ -1820,7 +1820,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<Set<String>> zrangeByScore(final String key, final double min, final double max, final int offset,
-                                               final int count) {
+                                                              final int count) {
         return new PipelineOperation<Set<String>>() {
 
             @Override
@@ -1859,7 +1859,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<Set<Tuple>> zrangeByScoreWithScores(final String key, final double min, final double max,
-                                                        final int offset, final int count) {
+                                                                       final int offset, final int count) {
         return new PipelineOperation<Set<Tuple>>() {
 
             @Override
@@ -1899,7 +1899,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<Set<String>> zrevrangeByScore(final String key, final double max, final double min,
-                                                  final int offset, final int count) {
+                                                                 final int offset, final int count) {
         return new PipelineOperation<Set<String>>() {
 
             @Override
@@ -1950,7 +1950,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<Set<Tuple>> zrevrangeByScoreWithScores(final String key, final double max, final double min,
-                                                           final int offset, final int count) {
+                                                                          final int offset, final int count) {
         return new PipelineOperation<Set<Tuple>>() {
 
             @Override
@@ -2261,7 +2261,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<List<GeoRadiusResponse>> georadius(String arg0, double arg1, double arg2, double arg3,
-                                                       GeoUnit arg4) {
+                                                                      GeoUnit arg4) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -2272,7 +2272,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<List<GeoRadiusResponse>> georadius(String arg0, double arg1, double arg2, double arg3, GeoUnit arg4,
-                                                       GeoRadiusParam arg5) {
+                                                                      GeoRadiusParam arg5) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -2293,7 +2293,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<List<GeoRadiusResponse>> georadiusByMember(String arg0, String arg1, double arg2, GeoUnit arg3,
-                                                               GeoRadiusParam arg4) {
+                                                                              GeoRadiusParam arg4) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -3101,7 +3101,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<List<GeoRadiusResponse>> georadius(byte[] key, double longitude, double latitude, double radius,
-                                                       GeoUnit unit) {
+                                                                      GeoUnit unit) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -3112,7 +3112,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<List<GeoRadiusResponse>> georadius(byte[] key, double longitude, double latitude, double radius,
-                                                       GeoUnit unit, GeoRadiusParam param) {
+                                                                      GeoUnit unit, GeoRadiusParam param) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -3133,7 +3133,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
     @Override
     public Response<List<GeoRadiusResponse>> georadiusByMember(byte[] key, byte[] member, double radius, GeoUnit unit,
-                                                               GeoRadiusParam param) {
+                                                                              GeoRadiusParam param) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 

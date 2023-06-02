@@ -45,11 +45,11 @@ public class DynoDualWriterPipeline extends DynoJedisPipeline {
     private final DynoDualWriterClient.Dial dial;
 
     DynoDualWriterPipeline(String appName,
-                           ConnectionPoolImpl<Jedis> pool,
-                           DynoJedisPipelineMonitor operationMonitor,
-                           ConnectionPoolMonitor connPoolMonitor,
-                           ConnectionPoolImpl<Jedis> shadowConnectionPool,
-                           DynoDualWriterClient.Dial dial) {
+                            ConnectionPoolImpl<Jedis> pool,
+                            DynoJedisPipelineMonitor operationMonitor,
+                            ConnectionPoolMonitor connPoolMonitor,
+                            ConnectionPoolImpl<Jedis> shadowConnectionPool,
+                            DynoDualWriterClient.Dial dial) {
         super(pool, operationMonitor, connPoolMonitor);
         this.connPool = pool;
         this.dial = dial;
@@ -631,13 +631,13 @@ public class DynoDualWriterPipeline extends DynoJedisPipeline {
 
     @Override
     public Response<List<GeoRadiusResponse>> georadius(String arg0, double arg1, double arg2, double arg3,
-                                                       GeoUnit arg4) {
+                                                                      GeoUnit arg4) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override
     public Response<List<GeoRadiusResponse>> georadius(String arg0, double arg1, double arg2, double arg3, GeoUnit arg4,
-                                                       GeoRadiusParam arg5) {
+                                                                      GeoRadiusParam arg5) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -648,7 +648,7 @@ public class DynoDualWriterPipeline extends DynoJedisPipeline {
 
     @Override
     public Response<List<GeoRadiusResponse>> georadiusByMember(String arg0, String arg1, double arg2, GeoUnit arg3,
-                                                               GeoRadiusParam arg4) {
+                                                                              GeoRadiusParam arg4) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -1215,13 +1215,13 @@ public class DynoDualWriterPipeline extends DynoJedisPipeline {
 
     @Override
     public Response<List<GeoRadiusResponse>> georadius(byte[] key, double longitude, double latitude, double radius,
-                                                       GeoUnit unit) {
+                                                                      GeoUnit unit) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override
     public Response<List<GeoRadiusResponse>> georadius(byte[] key, double longitude, double latitude, double radius,
-                                                       GeoUnit unit, GeoRadiusParam param) {
+                                                                      GeoUnit unit, GeoRadiusParam param) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -1232,7 +1232,7 @@ public class DynoDualWriterPipeline extends DynoJedisPipeline {
 
     @Override
     public Response<List<GeoRadiusResponse>> georadiusByMember(byte[] key, byte[] member, double radius, GeoUnit unit,
-                                                               GeoRadiusParam param) {
+                                                                              GeoRadiusParam param) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 

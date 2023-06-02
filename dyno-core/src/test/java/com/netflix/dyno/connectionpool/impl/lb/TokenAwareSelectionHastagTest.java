@@ -171,7 +171,7 @@ public class TokenAwareSelectionHastagTest {
     }
 
     private void runTest(long start, long end, Map<String, Integer> result,
-                         TokenAwareSelection<Integer> tokenAwareSelector, String hashtag, int testSelector) {
+                          TokenAwareSelection<Integer> tokenAwareSelector, String hashtag, int testSelector) {
 
         for (long i = start; i <= end; i++) {
 
