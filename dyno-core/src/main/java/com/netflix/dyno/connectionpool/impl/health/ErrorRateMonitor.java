@@ -34,11 +34,11 @@ import com.netflix.dyno.connectionpool.impl.health.RateTracker.Bucket;
  */
 public class ErrorRateMonitor {
 
-    private final List<ErrorCheckPolicy> policies = new ArrayList<ErrorCheckPolicy>();
+    private final List<ErrorCheckPolicy> policies = new ArrayList<>();
     private final AtomicLong lastCheckTimestamp = new AtomicLong(0L);
     private final AtomicLong suppressCheckTimestamp = new AtomicLong(0L);
 
-    private final AtomicReference<String> errorCheckLock = new AtomicReference<String>(null);
+    private final AtomicReference<String> errorCheckLock = new AtomicReference<>(null);
 
     private final long errorCheckFrequencySeconds;
     private final RateTracker rateTracker;

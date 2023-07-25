@@ -37,7 +37,7 @@ public abstract class DynoLockClientTest {
 
     @Test
     public void testAcquireLockWithExtension() throws InterruptedException {
-        boolean acquireResult = dynoLockClient.acquireLock(resource, 500, (rsc) -> {});
+        boolean acquireResult = dynoLockClient.acquireLock(resource, 500, rsc -> {});
         Assert.assertTrue("Failed to acquire lock on resource", acquireResult);
         Thread.sleep(3000);
         Assert.assertTrue(dynoLockClient.checkLock(resource) > 0);

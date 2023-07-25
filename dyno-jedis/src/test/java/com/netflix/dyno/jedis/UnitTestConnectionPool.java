@@ -56,7 +56,7 @@ public class UnitTestConnectionPool implements ConnectionPool<Jedis> {
 
         this.config = config;
         this.opMonitor = opMonitor;
-        this.redis_data = new HashMap<String, String>();
+        this.redis_data = new HashMap<>();
 
         when(client.set(anyString(), anyString())).thenAnswer(new Answer<String>() {
             @Override
@@ -112,7 +112,7 @@ public class UnitTestConnectionPool implements ConnectionPool<Jedis> {
                 // Get the keys passed
                 Object[] keys = invocation.getArguments();
 
-                List<String> values = new ArrayList<String>(10);
+                List<String> values = new ArrayList<>(10);
                 for (int i = 0; i < keys.length; i++) {
                     // get the ith key, find the value in redis_data
                     // if found, return that else return nil
@@ -176,7 +176,7 @@ public class UnitTestConnectionPool implements ConnectionPool<Jedis> {
         try {
             R r = op.execute(client, context);
             opMonitor.recordSuccess(op.getName());
-            return new OperationResultImpl<R>("Test", r, null);
+            return new OperationResultImpl<>("Test", r, null);
         } finally {
             context.reset();
         }

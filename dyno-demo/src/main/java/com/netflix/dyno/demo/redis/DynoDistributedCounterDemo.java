@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DynoDistributedCounterDemo extends DynoJedisDemo {
 
-    private final List<DynoCounter> counters = new ArrayList<DynoCounter>();
+    private final List<DynoCounter> counters = new ArrayList<>();
 
     public DynoDistributedCounterDemo(String clusterName, String localDC) {
         super(clusterName, localDC);

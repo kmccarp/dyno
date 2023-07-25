@@ -15,7 +15,7 @@ public class SSLContextUtil {
      */
     private static final String STOREPASS = "dynotests";
 
-    public static final SSLContext createAndInitSSLContext(final String jksFileName) throws Exception {
+    public static SSLContext createAndInitSSLContext(final String jksFileName) throws Exception {
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         final InputStream inputStream = classloader.getResourceAsStream(jksFileName);
 

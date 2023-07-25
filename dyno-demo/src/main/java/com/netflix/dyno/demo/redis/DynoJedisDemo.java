@@ -135,19 +135,21 @@ public class DynoJedisDemo {
             }
         };
 
-        if (initLock)
+        if (initLock) {
             initDynoLockClient(localHostSupplier, tokenSupplier, "test", "test");
-        else
+        } else {
             init(localHostSupplier, port, tokenSupplier);
+        }
     }
 
     private void initWithRemoteCluster(String clusterName, final List<Host> hosts, final int port, boolean lock) throws Exception {
         final HostSupplier clusterHostSupplier = () -> hosts;
 
-        if (lock)
+        if (lock) {
             initDynoLockClient(clusterHostSupplier, null, "test", clusterName);
-        else
+        } else {
             init(clusterHostSupplier, port, null);
+        }
     }
 
     public void initWithRemoteClusterFromFile(final String filename, final int port, boolean lock) throws Exception {
@@ -318,14 +320,14 @@ public class DynoJedisDemo {
     public void runBinaryKeyTest() throws Exception {
 
         System.out.println("Binary Key test selected");
-        byte[] videoInt = ByteBuffer.allocate(4).putInt(new Integer(100)).array();
-        byte[] locInt = ByteBuffer.allocate(4).putInt(new Integer(200)).array();
+        byte[] videoInt = ByteBuffer.allocate(4).putInt(Integer.valueOf(100)).array();
+        byte[] locInt = ByteBuffer.allocate(4).putInt(Integer.valueOf(200)).array();
         byte[] overallKey = new byte[videoInt.length + locInt.length];
 
-        byte[] firstWindow = ByteBuffer.allocate(4).putFloat(new Float(1.25)).array();
-        byte[] secondWindow = ByteBuffer.allocate(4).putFloat(new Float(1.5)).array();
-        byte[] thirdWindow = ByteBuffer.allocate(4).putFloat(new Float(1.75)).array();
-        byte[] fourthWindow = ByteBuffer.allocate(4).putFloat(new Float(2.0)).array();
+        byte[] firstWindow = ByteBuffer.allocate(4).putFloat(Float.valueOf("1.25")).array();
+        byte[] secondWindow = ByteBuffer.allocate(4).putFloat(Float.valueOf("1.5")).array();
+        byte[] thirdWindow = ByteBuffer.allocate(4).putFloat(Float.valueOf("1.75")).array();
+        byte[] fourthWindow = ByteBuffer.allocate(4).putFloat(Float.valueOf("2.0")).array();
 
         byte[] overallVal = new byte[firstWindow.length + secondWindow.length + thirdWindow.length
                 + fourthWindow.length];
@@ -656,7 +658,7 @@ public class DynoJedisDemo {
 
     private List<Host> readHostsFromFile(String filename, int port) throws Exception {
 
-        List<Host> hosts = new ArrayList<Host>();
+        List<Host> hosts = new ArrayList<>();
         File file = new File(filename);
         BufferedReader reader = new BufferedReader(new FileReader(file));
 
@@ -684,7 +686,7 @@ public class DynoJedisDemo {
         for (int i = 0; i < 10; i++) {
             DynoJedisPipeline pipeline = client.pipelined();
 
-            Map<byte[], byte[]> bar = new HashMap<byte[], byte[]>();
+            Map<byte[], byte[]> bar = new HashMap<>();
             bar.put("key__1".getBytes(), "value__1".getBytes());
             bar.put("key__2".getBytes(), "value__2".getBytes());
 
@@ -740,8 +742,8 @@ public class DynoJedisDemo {
                 map.put(field, value);
             }
 
-            Response<String> HMSetResult = pipeline.hmset(key, map);
-            Response<List<String>> HMGetResult = pipeline.hmget(key, fields.toArray(new String[fields.size()]));
+            Response<String> hMSetResult = pipeline.hmset(key, map);
+            Response<List<String>> hMGetResult = pipeline.hmget(key, fields.toArray(new String[fields.size()]));
             try {
                 pipeline.sync();
             } catch (Exception e) {
@@ -750,22 +752,20 @@ public class DynoJedisDemo {
                 throw e;
             }
 
-            if (!HMSetResult.get().equals("OK")) {
+            if (!"OK".equals(hMSetResult.get())) {
                 System.out.println("Result mismatch for HMSet key: '" + key + "' fields: '" + fields + "' result: '"
-                        + HMSetResult.get() + "'");
+                        + hMSetResult.get() + "'");
             }
             if ((operationIter % 100) == 0) {
                 System.out.println("\n>>>>>>>> " + operationIter + " operations performed....");
             }
-            List<String> HMGetResultStrings = HMGetResult.get();
-            for (int i = 0; i < HMGetResultStrings.size(); i++) {
+            List<String> hMGetResultStrings = hMGetResult.get();
+            for (int i = 0; i < hMGetResultStrings.size(); i++) {
                 String prefixSuffix = key + "_" + fields.get(i);
-                String value = HMGetResultStrings.get(i);
-                if (value.startsWith(prefixSuffix) && value.endsWith(prefixSuffix)) {
-                    continue;
-                } else {
+                String value = hMGetResultStrings.get(i);
+                if (!(value.startsWith(prefixSuffix) && value.endsWith(prefixSuffix))) {
                     System.out.println("Result mismatch key: '" + key + "' field: '" + fields.get(i) + "' value: '"
-                            + HMGetResultStrings.get(i) + "'");
+                            + hMGetResultStrings.get(i) + "'");
                 }
 
             }
@@ -943,11 +943,11 @@ public class DynoJedisDemo {
                     "local-ipv4");
             parser.parse(in, handler);
 
-            List<Host> hosts = new ArrayList<Host>();
+            List<Host> hosts = new ArrayList<>();
 
             for (Map<String, String> map : handler.getList()) {
                 String rack = map.get("availability-zone");
-                Status status = map.get("status").equalsIgnoreCase("UP") ? Status.Up : Status.Down;
+                Status status = "UP".equalsIgnoreCase(map.get("status")) ? Status.Up : Status.Down;
                 Host host = new HostBuilder().setHostname(map.get("public-hostname")).setIpAddress(map.get("local-ipv4")).setRack(rack).setStatus(status).createHost();
                 hosts.add(host);
                 System.out.println("Host: " + host);
@@ -998,14 +998,14 @@ public class DynoJedisDemo {
         threadPool.shutdownNow();
     }
 
-    private class SAXHandler extends DefaultHandler {
+    private final class SAXHandler extends DefaultHandler {
 
-        private final List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        private final List<Map<String, String>> list = new ArrayList<>();
         private final String rootElement;
-        private final Set<String> interestElements = new HashSet<String>();
+        private final Set<String> interestElements = new HashSet<>();
 
-        private Map<String, String> currentPayload = null;
-        private String currentInterestElement = null;
+        private Map<String, String> currentPayload;
+        private String currentInterestElement;
 
         private SAXHandler(String root, String... interests) {
 
@@ -1021,7 +1021,7 @@ public class DynoJedisDemo {
 
             if (qName.equalsIgnoreCase(rootElement)) {
                 // prep for next instance
-                currentPayload = new HashMap<String, String>();
+                currentPayload = new HashMap<>();
                 return;
             }
 
@@ -1067,10 +1067,11 @@ public class DynoJedisDemo {
         Object obj = client.eval(
                 "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end",
                 keys, args);
-        if (obj.toString().equals("1"))
+        if ("1".equals(obj.toString())) {
             System.out.println("EVAL Test Succeeded");
-        else
+        } else {
             System.out.println("EVAL Test Failed");
+        }
 
     }
 
@@ -1124,24 +1125,25 @@ public class DynoJedisDemo {
         List<String> keys = Lists.newArrayList("EvalShaTestKey");
         List<String> args = Lists.newArrayList();
 
-        String script_hash = client.scriptLoad("return redis.call('get', KEYS[1])");
+        String scriptHash = client.scriptLoad("return redis.call('get', KEYS[1])");
 
         // Make sure that the script is saved in Redis' script cache.
-        if (client.scriptExists(script_hash) == Boolean.FALSE) {
+        if (client.scriptExists(scriptHash) == Boolean.FALSE) {
             throw new Exception("Test failed. Script did not exist when it should have.");
         }
 
-        Object obj = client.evalsha(script_hash, keys, args);
-        if (obj.toString().equals("EVALSHA_WORKS"))
+        Object obj = client.evalsha(scriptHash, keys, args);
+        if ("EVALSHA_WORKS".equals(obj.toString())) {
             System.out.println("EVALSHA Test Succeeded");
-        else
+        } else {
             throw new Exception("EVALSHA Test Failed. Expected: 'EVALSHA_WORKS'; Got: '" + obj.toString());
+        }
 
         // Flush the script cache.
         client.scriptFlush();
 
         // Make sure that the script is no longer in the cache.
-        if (client.scriptExists(script_hash) == Boolean.TRUE) {
+        if (client.scriptExists(scriptHash) == Boolean.TRUE) {
             throw new Exception("Test failed. Script existed when it shouldn't have.");
         }
 
@@ -1191,7 +1193,7 @@ public class DynoJedisDemo {
      *             -t,--test <testNumber>              Test to run
      *             </ol>
      */
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         Option lock = new Option("k", "lock", false, "Dyno Lock");
         lock.setArgName("lock");
         Option primaryCluster = new Option("p", "primaryCluster", true, "Primary cluster");
@@ -1362,7 +1364,7 @@ public class DynoJedisDemo {
     private void runLockTest() throws InterruptedException {
         String resourceName = "testResource";
         long ttl = 5_000;
-        boolean value = dynoLockClient.acquireLock(resourceName, ttl, (resource) -> logger.info("Extension failed"));
+        boolean value = dynoLockClient.acquireLock(resourceName, ttl, resource -> logger.info("Extension failed"));
         if (value) {
             logger.info("Acquired lock on resource {} for {} ms ", resourceName, value);
         }

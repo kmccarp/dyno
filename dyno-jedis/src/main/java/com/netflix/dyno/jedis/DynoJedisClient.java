@@ -84,7 +84,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     private final String appName;
     private final String clusterName;
     private final ConnectionPool<Jedis> connPool;
-    private final AtomicReference<DynoJedisPipelineMonitor> pipelineMonitor = new AtomicReference<DynoJedisPipelineMonitor>();
+    private final AtomicReference<DynoJedisPipelineMonitor> pipelineMonitor = new AtomicReference<>();
 
     protected final DynoOPMonitor opMonitor;
 
@@ -222,7 +222,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         @Override
         public String[] compressMultiKeyValue(ConnectionContext ctx, String... keyValues) {
             List<String> items = Arrays.asList(keyValues);
-            List<String> newItems = new ArrayList<String>();
+            List<String> newItems = new ArrayList<>();
 
             for (int i = 0; i < items.size(); i++) {
                 /*
@@ -886,7 +886,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
             return connPool.executeWithFailover(new CompressionValueOperation<List<String>>(key, OpName.HMGET) {
                 @Override
                 public List<String> execute(final Jedis client, final ConnectionContext state) throws DynoException {
-                    return new ArrayList<String>(CollectionUtils.transform(client.hmget(key, fields),
+                    return new ArrayList<>(CollectionUtils.transform(client.hmget(key, fields),
                             new CollectionUtils.Transform<String, String>() {
                                 @Override
                                 public String get(String s) {
@@ -974,7 +974,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
             return connPool.executeWithFailover(new CompressionValueOperation<List<String>>(key, OpName.HVALS) {
                 @Override
                 public List<String> execute(final Jedis client, final ConnectionContext state) throws DynoException {
-                    return new ArrayList<String>(CollectionUtils.transform(client.hvals(key),
+                    return new ArrayList<>(CollectionUtils.transform(client.hvals(key),
                             new CollectionUtils.Transform<String, String>() {
                                 @Override
                                 public String get(String s) {
@@ -1476,14 +1476,14 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     public OperationResult<String> d_set(final String key, final String value, final String nxxx, final String expx,
                                          final long time) {
         SetParams setParams = SetParams.setParams();
-        if (nxxx.equalsIgnoreCase("NX")) {
+        if ("NX".equalsIgnoreCase(nxxx)) {
             setParams.nx();
-        } else if (nxxx.equalsIgnoreCase("XX")) {
+        } else if ("XX".equalsIgnoreCase(nxxx)) {
             setParams.xx();
         }
-        if (expx.equalsIgnoreCase("EX")) {
+        if ("EX".equalsIgnoreCase(expx)) {
             setParams.ex((int) time);
-        } else if (expx.equalsIgnoreCase("PX")) {
+        } else if ("PX".equalsIgnoreCase(expx)) {
             setParams.px(time);
         }
 
@@ -1495,14 +1495,14 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     public OperationResult<String> d_set(final String key, final String value, final SetParams setParams) {
-        if (CompressionStrategy.NONE == connPool.getConfiguration().getCompressionStrategy())
+        if (CompressionStrategy.NONE == connPool.getConfiguration().getCompressionStrategy()) {
             return connPool.executeWithFailover(new BaseKeyOperation<String>(key, OpName.SET) {
                 @Override
                 public String execute(Jedis client, ConnectionContext state) throws DynoException {
                     return client.set(key, value, setParams);
                 }
             });
-        else {
+        } else {
             return connPool.executeWithFailover(new CompressionValueOperation<String>(key, OpName.SET) {
                 @Override
                 public String execute(final Jedis client, final ConnectionContext state) throws DynoException {
@@ -2697,7 +2697,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     @Override
     public Set<String> keys(String pattern) {
 
-        Set<String> allResults = new HashSet<String>();
+        Set<String> allResults = new HashSet<>();
         Collection<OperationResult<Set<String>>> results = d_keys(pattern);
         for (OperationResult<Set<String>> result : results) {
             allResults.addAll(result.getResult());
@@ -2716,7 +2716,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
 
         Logger.warn("Executing d_keys for pattern: " + pattern);
 
-        Collection<OperationResult<Set<String>>> results = connPool
+        return connPool
                 .executeWithRing(new CursorBasedResultImpl<String>(new LinkedHashMap<String, ScanResult<String>>()), new BaseKeyOperation<Set<String>>(pattern, OpName.KEYS) {
 
                     @Override
@@ -2724,8 +2724,6 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
                         return client.keys(pattern);
                     }
                 });
-
-        return results;
     }
 
     @Override
@@ -2762,7 +2760,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
                         @Override
                         public List<String> execute(final Jedis client, final ConnectionContext state)
                                 throws DynoException {
-                            return new ArrayList<String>(CollectionUtils.transform(client.mget(keys),
+                            return new ArrayList<>(CollectionUtils.transform(client.mget(keys),
                                     new CollectionUtils.Transform<String, String>() {
                                         @Override
                                         public String get(String s) {
@@ -4189,7 +4187,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
 
         Response<Long> hdelResponse = null;
         Response<Long> zremResponse = null;
-        if (expiredFields.size() > 0) {
+        if (!expiredFields.isEmpty()) {
             hdelResponse = pipeline.hdel(dataKey, expiredFields.toArray(new String[0]));
             zremResponse = pipeline.zremrangeByScore(metadataKey, 0, now);
         }
@@ -4198,7 +4196,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
     }
 
     private void ehVerifyMetadataUpdate(EHMetadataUpdateResult ehMetadataUpdateResult) {
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get())) {
             // If requested field is not in in the expired fields list, correctness of this request is not affected.
             Logger.debug("Expire hash:{} inconsistent with metadata:{}. Failed to delete expired fields from hash",
@@ -4206,7 +4204,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         }
 
         // if fields were not deleted from metadata, correctness is not affected.
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.zremResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.zremResponse != null &&
                 ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.zremResponse.get()) {
             Logger.debug("Expire hash:{} inconsistent with metadata:{}. Failed to delete expired fields from metadata",
                     ehMetadataUpdateResult.dataKey, ehMetadataUpdateResult.metadataKey);
@@ -4257,7 +4255,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // Return failure if the requested field was expired and was not removed from the data
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get()) &&
                 ehMetadataUpdateResult.expiredFields.contains(field)) {
             throw new DynoException("Failed to update expire hash metadata");
@@ -4294,7 +4292,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // Return failure if the requested field was expired and was not removed from the data
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get()) &&
                 ehMetadataUpdateResult.expiredFields.contains(field)) {
             throw new DynoException("Failed to update expire hash metadata");
@@ -4316,7 +4314,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get())) {
             throw new DynoException("Failed to expire hash fields");
         }
@@ -4337,7 +4335,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get())) {
             throw new DynoException("Failed to expire hash fields");
         }
@@ -4358,7 +4356,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get())) {
             throw new DynoException("Failed to expire hash fields");
         }
@@ -4379,7 +4377,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys and expired keys contains one of requested fields, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get()) &&
                 Arrays.stream(fields).anyMatch(ehMetadataUpdateResult.expiredFields::contains)) {
             throw new DynoException("Failed to expire hash fields");
@@ -4415,7 +4413,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
 
         EHMetadataUpdateResult ehMetadataUpdateResult = ehPurgeExpiredFields(pipeline, key);
 
-        if (ehMetadataUpdateResult.expiredFields.size() > 0) {
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty()) {
             pipeline.sync();
         } else {
             pipeline.discardPipelineAndReleaseConnection();
@@ -4425,7 +4423,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get())) {
             throw new DynoException("Failed to expire hash fields");
         }
@@ -4446,7 +4444,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys and expired keys contains requested field, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get()) &&
                 ehMetadataUpdateResult.expiredFields.contains(field)) {
             throw new DynoException("Failed to expire hash fields");
@@ -4468,7 +4466,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys and expired keys contains requested field, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get()) &&
                 ehMetadataUpdateResult.expiredFields.contains(field)) {
             throw new DynoException("Failed to expire hash fields");
@@ -4490,7 +4488,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get())) {
             throw new DynoException("Failed to expire hash fields");
         }
@@ -4625,7 +4623,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
         ehVerifyMetadataUpdate(ehMetadataUpdateResult);
 
         // on failure to remove all expired keys and expired keys contains requested field, fail
-        if (ehMetadataUpdateResult.expiredFields.size() > 0 && ehMetadataUpdateResult.hdelResponse != null &&
+        if (!ehMetadataUpdateResult.expiredFields.isEmpty() && ehMetadataUpdateResult.hdelResponse != null &&
                 (ehMetadataUpdateResult.expiredFields.size() != ehMetadataUpdateResult.hdelResponse.get()) &&
                 ehMetadataUpdateResult.expiredFields.contains(field)) {
             throw new DynoException("Failed to expire hash fields");
@@ -4776,7 +4774,7 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
             assert (clusterName != null);
 
             // Make sure that the user doesn't set isDatastoreClient and connectionPoolConsistency together.
-            if (this.isDatastoreClient == true && this.connectionPoolConsistency != null) {
+            if ( this.isDatastoreClient && this.connectionPoolConsistency != null) {
                 throw new DynoException("Cannot set isDatastoreClient(true) and also set withConnectionPoolConsistency() together");
             }
 
@@ -4841,8 +4839,9 @@ public class DynoJedisClient implements JedisCommands, BinaryJedisCommands, Mult
 
             shadowConfig.withHostSupplier(shadowSupplier);
 
-            if (dualWriteTokenMapSupplier != null)
+            if (dualWriteTokenMapSupplier != null) {
                 shadowConfig.withTokenSupplier(dualWriteTokenMapSupplier);
+            }
 
             String shadowAppName = shadowConfig.getName();
             DynoCPMonitor shadowCPMonitor = new DynoCPMonitor(shadowAppName);
