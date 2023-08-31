@@ -39,10 +39,10 @@ import com.netflix.dyno.connectionpool.impl.HostSelectionStrategy;
 public class RoundRobinSelection<CL> implements HostSelectionStrategy<CL> {
 
     // The total set of host pools. Once the host is selected, we ask it's corresponding pool to vend a connection
-    private final ConcurrentHashMap<Long, HostConnectionPool<CL>> tokenPools = new ConcurrentHashMap<Long, HostConnectionPool<CL>>();
+    private final ConcurrentHashMap<Long, HostConnectionPool<CL>> tokenPools = new ConcurrentHashMap<>();
 
     // the circular list of Host over which we load balance in a round robin fashion
-    private final CircularList<HostToken> circularList = new CircularList<HostToken>(null);
+    private final CircularList<HostToken> circularList = new CircularList<>(null);
 
     public RoundRobinSelection() {
     }
@@ -68,7 +68,7 @@ public class RoundRobinSelection<CL> implements HostSelectionStrategy<CL> {
 
     @Override
     public Map<HostConnectionPool<CL>, BaseOperation<CL, ?>> getPoolsForOperationBatch(Collection<BaseOperation<CL, ?>> ops) throws NoAvailableHostsException {
-        Map<HostConnectionPool<CL>, BaseOperation<CL, ?>> map = new HashMap<HostConnectionPool<CL>, BaseOperation<CL, ?>>();
+        Map<HostConnectionPool<CL>, BaseOperation<CL, ?>> map = new HashMap<>();
         for (BaseOperation<CL, ?> op : ops) {
             map.put(getNextConnectionPool(), op);
         }
@@ -78,7 +78,7 @@ public class RoundRobinSelection<CL> implements HostSelectionStrategy<CL> {
 
     @Override
     public List<HostConnectionPool<CL>> getOrderedHostPools() {
-        return new ArrayList<HostConnectionPool<CL>>(tokenPools.values());
+        return new ArrayList<>(tokenPools.values());
     }
 
 
@@ -128,7 +128,7 @@ public class RoundRobinSelection<CL> implements HostSelectionStrategy<CL> {
 
         HostConnectionPool<CL> prevPool = tokenPools.put(host.getToken(), hostPool);
         if (prevPool == null) {
-            List<HostToken> newHostList = new ArrayList<HostToken>(circularList.getEntireList());
+            List<HostToken> newHostList = new ArrayList<>(circularList.getEntireList());
             newHostList.add(host);
             circularList.swapWithList(newHostList);
         }
@@ -140,7 +140,7 @@ public class RoundRobinSelection<CL> implements HostSelectionStrategy<CL> {
 
         HostConnectionPool<CL> prevPool = tokenPools.get(host.getToken());
         if (prevPool != null) {
-            List<HostToken> newHostList = new ArrayList<HostToken>(circularList.getEntireList());
+            List<HostToken> newHostList = new ArrayList<>(circularList.getEntireList());
             newHostList.remove(host);
             circularList.swapWithList(newHostList);
             tokenPools.remove(host.getToken());

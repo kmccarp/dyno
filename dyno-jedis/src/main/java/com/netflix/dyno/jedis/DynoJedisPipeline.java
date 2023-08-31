@@ -63,14 +63,14 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
     private final ConnectionPoolMonitor cpMonitor;
 
     // the cached pipeline
-    private volatile Pipeline jedisPipeline = null;
+    private volatile Pipeline jedisPipeline;
     // the cached row key for the pipeline. all subsequent requests to pipeline
     // must be the same. this is used to check that.
-    private final AtomicReference<String> theKey = new AtomicReference<String>(null);
-    private final AtomicReference<byte[]> theBinaryKey = new AtomicReference<byte[]>(null);
-    private final AtomicReference<String> hashtag = new AtomicReference<String>(null);
+    private final AtomicReference<String> theKey = new AtomicReference<>(null);
+    private final AtomicReference<byte[]> theBinaryKey = new AtomicReference<>(null);
+    private final AtomicReference<String> hashtag = new AtomicReference<>(null);
     // used for tracking errors
-    private final AtomicReference<DynoException> pipelineEx = new AtomicReference<DynoException>(null);
+    private final AtomicReference<DynoException> pipelineEx = new AtomicReference<>(null);
 
     private static final String DynoPipeline = "DynoPipeline";
 
@@ -348,7 +348,7 @@ public class DynoJedisPipeline implements RedisPipeline, BinaryRedisPipeline, Au
 
         @Override
         public List<String> get() {
-            return new ArrayList<String>(
+            return new ArrayList<>(
                     CollectionUtils.transform(response.get(), new CollectionUtils.Transform<String, String>() {
                         @Override
                         public String get(String s) {

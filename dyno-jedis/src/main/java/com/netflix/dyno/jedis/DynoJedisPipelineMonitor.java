@@ -31,7 +31,7 @@ public class DynoJedisPipelineMonitor {
 
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(DynoJedisPipelineMonitor.class);
 
-    private final ConcurrentHashMap<String, BasicCounter> counterMap = new ConcurrentHashMap<String, BasicCounter>();
+    private final ConcurrentHashMap<String, BasicCounter> counterMap = new ConcurrentHashMap<>();
     private final String appName;
     private final BasicCounter pipelineSync;
     private final BasicCounter pipelineDiscard;
@@ -137,7 +137,7 @@ public class DynoJedisPipelineMonitor {
      * This class measures the latency of a sync() or syncAndReturnAll() operation, which is the time
      * it takes the client to receive the response of all operations in the pipeline.
      */
-    private class PipelineTimer {
+    private final class PipelineTimer {
 
         private final EstimatedHistogramMean latMean;
         private final EstimatedHistogramPercentile lat99;
@@ -170,9 +170,9 @@ public class DynoJedisPipelineMonitor {
      * This class measures the time it takes to send a request from the client to the server via the pipeline. The
      * 'send' is not asynchronous within the Jedis client
      */
-    private class PipelineSendTimer {
+    private final class PipelineSendTimer {
 
-        private final Map<String, EstimatedHistogramMean> histograms = new ConcurrentHashMap<String, EstimatedHistogramMean>();
+        private final Map<String, EstimatedHistogramMean> histograms = new ConcurrentHashMap<>();
         private final String appName;
 
         private PipelineSendTimer(String appName) {

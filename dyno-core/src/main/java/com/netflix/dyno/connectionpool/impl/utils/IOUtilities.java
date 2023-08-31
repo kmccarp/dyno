@@ -32,7 +32,7 @@ public class IOUtilities {
             reader = new BufferedReader(new FileReader(file));
             String line = null;
 
-            List<String> lines = new ArrayList<String>();
+            List<String> lines = new ArrayList<>();
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
             }

@@ -41,7 +41,7 @@ public class LockHost extends CommandHost<LockResource> {
             @Override
             public LockResource execute(Jedis client, ConnectionContext state) {
                 String result = client.set(value, randomKey, params);
-                if (result != null && result.equals("OK")) {
+                if ("OK".equals(result)) {
                     lockResource.incrementLocked();
                     latch.countDown();
                 }

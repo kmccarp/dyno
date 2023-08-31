@@ -105,7 +105,7 @@ public class CustomTokenSupplierExample {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         BasicConfigurator.configure();
         CustomTokenSupplierExample example = new CustomTokenSupplierExample();

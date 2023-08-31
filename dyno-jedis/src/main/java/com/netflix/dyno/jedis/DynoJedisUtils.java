@@ -25,6 +25,7 @@ import javax.net.ssl.SSLSocketFactory;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -46,8 +47,9 @@ public class DynoJedisUtils {
             }
         }
         cpConfig.withHostSupplier(hostSupplier);
-        if (tokenMapSupplier != null)
+        if (tokenMapSupplier != null) {
             cpConfig.withTokenSupplier(tokenMapSupplier);
+        }
         setLoadBalancingStrategy(cpConfig);
         setHashtagConnectionPool(hostSupplier, cpConfig);
     }
@@ -70,7 +72,7 @@ public class DynoJedisUtils {
 
             pool.start().get();
 
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> pool.shutdown()));
+            Runtime.getRuntime().addShutdownHook(new Thread(pool::shutdown));
         } catch (NoAvailableHostsException e) {
             if (cpConfig.getFailOnStartupIfNoHosts()) {
                 throw new RuntimeException(e);
@@ -126,7 +128,7 @@ public class DynoJedisUtils {
         // Create a list of host/Tokens
         List<HostToken> hostTokens;
         if (tokenMapSupplier != null) {
-            Set<Host> hostSet = new HashSet<Host>(hosts);
+            Set<Host> hostSet = new HashSet<>(hosts);
             hostTokens = tokenMapSupplier.getTokens(hostSet);
             /* Dyno cannot reach the TokenMapSupplier endpoint,
              * therefore no nodes can be retrieved.
@@ -142,7 +144,7 @@ public class DynoJedisUtils {
         Stream<String> htStream = hostTokens.stream().map(hostToken -> hostToken.getHost().getHashtag());
 
         if (hashtag == null) {
-            htStream.filter(ht -> ht != null).findAny().ifPresent(ignore -> {
+            htStream.filter(Objects::nonNull).findAny().ifPresent(ignore -> {
                 logger.error("Hashtag mismatch across hosts");
                 throw new RuntimeException("Hashtags are different across hosts");
             });
