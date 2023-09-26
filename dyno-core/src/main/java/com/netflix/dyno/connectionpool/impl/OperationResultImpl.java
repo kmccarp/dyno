@@ -37,11 +37,11 @@ public class OperationResultImpl<R> implements OperationResult<R> {
     private final String opName;
     private final R result;
     private final Future<R> futureResult;
-    private Host host = null;
-    private long duration = 0;
-    private int attempts = 0;
+    private Host host;
+    private long duration;
+    private int attempts;
     private final OperationMonitor opMonitor;
-    private final ConcurrentHashMap<String, String> metadata = new ConcurrentHashMap<String, String>();
+    private final ConcurrentHashMap<String, String> metadata = new ConcurrentHashMap<>();
 
     public OperationResultImpl(String name, R r, OperationMonitor monitor) {
         opName = name;

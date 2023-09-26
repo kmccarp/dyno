@@ -30,7 +30,7 @@ public class DynoBinarySearchTest {
     @Test
     public void testTokenRange() throws Exception {
 
-        DynoTokenRange<Integer> r1 = new DynoTokenRange<Integer>(20, 40);
+        DynoTokenRange<Integer> r1 = new DynoTokenRange<>(20, 40);
 
         Assert.assertEquals(1, r1.compareTo(10));
         Assert.assertEquals(1, r1.compareTo(15));
@@ -42,7 +42,7 @@ public class DynoBinarySearchTest {
 
 
         // First Range
-        r1 = new DynoTokenRange<Integer>(null, 40);
+        r1 = new DynoTokenRange<>(null, 40);
 
         Assert.assertEquals(0, r1.compareTo(10));
         Assert.assertEquals(0, r1.compareTo(15));
@@ -58,7 +58,7 @@ public class DynoBinarySearchTest {
 
         List<Integer> list = Arrays.asList(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
 
-        DynoBinarySearch<Integer> search = new DynoBinarySearch<Integer>(list);
+        DynoBinarySearch<Integer> search = new DynoBinarySearch<>(list);
 
         for (int i = 0; i <= 133; i++) {
 
@@ -75,9 +75,9 @@ public class DynoBinarySearchTest {
 
         List<Long> tokens = Arrays.asList(611697721L, 2043353485L, 3475009249L);
 
-        DynoBinarySearch<Long> search = new DynoBinarySearch<Long>(tokens);
+        DynoBinarySearch<Long> search = new DynoBinarySearch<>(tokens);
 
-        Map<Long, Long> tokenCount = new HashMap<Long, Long>();
+        Map<Long, Long> tokenCount = new HashMap<>();
 
         tokenCount.put(611697721L, 0L);
         tokenCount.put(2043353485L, 0L);

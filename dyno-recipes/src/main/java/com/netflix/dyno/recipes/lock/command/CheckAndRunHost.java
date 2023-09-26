@@ -43,8 +43,7 @@ public class CheckAndRunHost extends CommandHost<Object> {
                 if (randomKey == null) {
                     throw new IllegalStateException("Cannot extend lock with null value for key");
                 }
-                Object result = client.eval(command, 1, resource, randomKey);
-                return result;
+                return client.eval(command, 1, resource, randomKey);
             }
         });
         cleanConnection(connection);

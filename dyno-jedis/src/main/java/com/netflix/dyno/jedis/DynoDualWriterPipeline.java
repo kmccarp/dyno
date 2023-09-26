@@ -39,7 +39,7 @@ import java.util.concurrent.Future;
  */
 public class DynoDualWriterPipeline extends DynoJedisPipeline {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DynoDualWriterPipeline.class);
-    private static ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final ConnectionPoolImpl<Jedis> connPool;
     private final DynoJedisPipeline shadowPipeline;
     private final DynoDualWriterClient.Dial dial;
@@ -105,14 +105,14 @@ public class DynoDualWriterPipeline extends DynoJedisPipeline {
     private boolean canSendShadowRequest(String key) {
         return this.getConnPool().getConfiguration().isDualWriteEnabled() &&
                 !this.getConnPool().isIdle() &&
-                this.getConnPool().getActivePools().size() > 0 &&
+                !this.getConnPool().getActivePools().isEmpty() &&
                 dial.isInRange(key);
     }
 
     private boolean canSendShadowRequest(byte[] key) {
         return this.getConnPool().getConfiguration().isDualWriteEnabled() &&
                 !this.getConnPool().isIdle() &&
-                this.getConnPool().getActivePools().size() > 0 &&
+                !this.getConnPool().getActivePools().isEmpty() &&
                 dial.isInRange(key);
     }
 

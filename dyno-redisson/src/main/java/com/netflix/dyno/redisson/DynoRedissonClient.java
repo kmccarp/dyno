@@ -46,7 +46,7 @@ public class DynoRedissonClient {
     }
 
     private enum OpName {
-        Set, Delete, Get, GetBulk, GetAsync;
+        Set, Delete, Get, GetBulk, GetAsync
     }
 
     public Future<OperationResult<String>> get(final String key) throws DynoException {
@@ -66,7 +66,7 @@ public class DynoRedissonClient {
             @Override
             public ListenableFuture<String> executeAsync(RedisAsyncConnection<String, String> client)
                     throws DynoException {
-                return new DecoratingListenableFuture<String>((client.get(key)));
+                return new DecoratingListenableFuture<>((client.get(key)));
             }
 
             @Override
@@ -93,7 +93,7 @@ public class DynoRedissonClient {
             @Override
             public ListenableFuture<String> executeAsync(RedisAsyncConnection<String, String> client)
                     throws DynoException {
-                return new DecoratingListenableFuture<String>((client.get(key)));
+                return new DecoratingListenableFuture<>((client.get(key)));
             }
 
             @Override
@@ -120,7 +120,7 @@ public class DynoRedissonClient {
             @Override
             public ListenableFuture<String> executeAsync(RedisAsyncConnection<String, String> client)
                     throws DynoException {
-                return new DecoratingListenableFuture<String>((client.set(key, value)));
+                return new DecoratingListenableFuture<>((client.set(key, value)));
             }
 
             @Override
@@ -148,7 +148,7 @@ public class DynoRedissonClient {
             @Override
             public ListenableFuture<String> executeAsync(RedisAsyncConnection<String, String> client)
                     throws DynoException {
-                return new DecoratingListenableFuture<String>((client.set(key, value)));
+                return new DecoratingListenableFuture<>((client.set(key, value)));
             }
 
             @Override
@@ -189,7 +189,7 @@ public class DynoRedissonClient {
 
             RedissonConnectionFactory connFactory = new RedissonConnectionFactory(new NioEventLoopGroup(4), opMonitor);
 
-            ConnectionPoolImpl<RedisAsyncConnection<String, String>> pool = new ConnectionPoolImpl<RedisAsyncConnection<String, String>>(
+            ConnectionPoolImpl<RedisAsyncConnection<String, String>> pool = new ConnectionPoolImpl<>(
                     connFactory, cpConfig, cpMonitor, Type.Async);
 
             try {
@@ -203,8 +203,7 @@ public class DynoRedissonClient {
                 pool.idle();
             }
 
-            final DynoRedissonClient client = new DynoRedissonClient(appName, pool);
-            return client;
+            return new DynoRedissonClient(appName, pool);
         }
 
         public static Builder withName(String name) {

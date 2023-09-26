@@ -64,7 +64,7 @@ public class ConnectionPoolHealthTrackerTest {
     public void testConnectionPoolRecycle() throws Exception {
 
         ConnectionPoolConfiguration config = new ConnectionPoolConfigurationImpl("test");
-        ConnectionPoolHealthTracker<Integer> tracker = new ConnectionPoolHealthTracker<Integer>(config, threadPool, 1000, -1);
+        ConnectionPoolHealthTracker<Integer> tracker = new ConnectionPoolHealthTracker<>(config, threadPool, 1000, -1);
         tracker.start();
 
         Host h1 = new HostBuilder().setHostname("h1").setRack("r1").setStatus(Status.Up).createHost();
@@ -92,7 +92,7 @@ public class ConnectionPoolHealthTrackerTest {
     public void testBadConnectionPoolKeepsReconnecting() throws Exception {
 
         ConnectionPoolConfiguration config = new ConnectionPoolConfigurationImpl("test");
-        ConnectionPoolHealthTracker<Integer> tracker = new ConnectionPoolHealthTracker<Integer>(config, threadPool, 1000, -1);
+        ConnectionPoolHealthTracker<Integer> tracker = new ConnectionPoolHealthTracker<>(config, threadPool, 1000, -1);
         tracker.start();
 
         Host h1 = new HostBuilder().setHostname("h1").setRack("r1").setStatus(Status.Up).createHost();

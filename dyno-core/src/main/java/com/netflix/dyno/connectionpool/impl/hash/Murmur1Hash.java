@@ -34,7 +34,7 @@ public class Murmur1Hash {
 
     public static int hash(byte[] data, int length) {
 
-        int seed = (0xdeadbeef * length);
+        int seed = 0xdeadbeef * length;
 
         return hash(ByteBuffer.wrap(data, 0, length), seed);
     }

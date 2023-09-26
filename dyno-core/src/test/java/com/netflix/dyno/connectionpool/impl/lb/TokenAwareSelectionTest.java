@@ -68,7 +68,7 @@ public class TokenAwareSelectionTest {
     @Test
     public void testTokenAware() throws Exception {
 
-        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<HostToken, HostConnectionPool<Integer>>(new Comparator<HostToken>() {
+        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<>(new Comparator<HostToken>() {
 
             @Override
             public int compare(HostToken o1, HostToken o2) {
@@ -81,10 +81,10 @@ public class TokenAwareSelectionTest {
         pools.put(h3, getMockHostConnectionPool(h3));
         pools.put(h4, getMockHostConnectionPool(h4));
 
-        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<Integer>();
+        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<>();
         tokenAwareSelector.initWithHosts(pools);
 
-        Map<String, Integer> result = new HashMap<String, Integer>();
+        Map<String, Integer> result = new HashMap<>();
         runTest(0L, 100000L, result, tokenAwareSelector);
 
         System.out.println("Token distribution: " + result);
@@ -95,7 +95,7 @@ public class TokenAwareSelectionTest {
     @Test
     public void testTokenAwareMultiplePorts() throws Exception {
 
-        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<HostToken, HostConnectionPool<Integer>>(new Comparator<HostToken>() {
+        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<>(new Comparator<HostToken>() {
 
             @Override
             public int compare(HostToken o1, HostToken o2) {
@@ -109,10 +109,10 @@ public class TokenAwareSelectionTest {
         pools.put(h1p8103, getMockHostConnectionPool(h1p8103));
 
 
-        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<Integer>();
+        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<>();
         tokenAwareSelector.initWithHosts(pools);
 
-        Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> result = new HashMap<>();
         runTestWithPorts(0L, 100000L, result, tokenAwareSelector);
 
         System.out.println("Token distribution: " + result);
@@ -238,7 +238,7 @@ public class TokenAwareSelectionTest {
             count++;
         }
 
-        double mean = (sum / count);
+        double mean = sum / count;
 
         for (int n : values) {
             double percentageDiff = 100 * ((mean - n) / mean);
