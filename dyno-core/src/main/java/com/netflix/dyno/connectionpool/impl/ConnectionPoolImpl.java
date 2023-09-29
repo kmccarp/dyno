@@ -90,7 +90,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
 
     private static final Logger Logger = LoggerFactory.getLogger(ConnectionPoolImpl.class);
 
-    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> cpMap = new ConcurrentHashMap<Host, HostConnectionPool<CL>>();
+    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> cpMap = new ConcurrentHashMap<>();
     private final ConnectionPoolHealthTracker<CL> cpHealthTracker;
 
     private final HostConnectionPoolFactory<CL> hostConnPoolFactory;
@@ -122,7 +122,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
         this.cpMonitor = cpMon;
         this.poolType = type;
 
-        this.cpHealthTracker = new ConnectionPoolHealthTracker<CL>(cpConfiguration, connPoolThreadPool);
+        this.cpHealthTracker = new ConnectionPoolHealthTracker<>(cpConfiguration, connPoolThreadPool);
 
         switch (type) {
             case Sync:
@@ -237,7 +237,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
     @Override
     public boolean isHostUp(Host host) {
         HostConnectionPool<CL> hostPool = cpMap.get(host);
-        return (hostPool != null) ? hostPool.isActive() : false;
+        return hostPool != null ? hostPool.isActive() : false;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
 
     @Override
     public List<HostConnectionPool<CL>> getActivePools() {
-        return new ArrayList<HostConnectionPool<CL>>(
+        return new ArrayList<>(
                 CollectionUtils.filter(getPools(), new Predicate<HostConnectionPool<CL>>() {
 
                     @Override
@@ -262,7 +262,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
 
     @Override
     public List<HostConnectionPool<CL>> getPools() {
-        return new ArrayList<HostConnectionPool<CL>>(cpMap.values());
+        return new ArrayList<>(cpMap.values());
     }
 
     @Override
@@ -376,10 +376,10 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
         Collection<Connection<CL>> connections = selectionStrategy
                 .getConnectionsToRing(tokenRackMapper, cpConfiguration.getMaxTimeoutWhenExhausted(), TimeUnit.MILLISECONDS);
 
-        LinkedBlockingQueue<Connection<CL>> connQueue = new LinkedBlockingQueue<Connection<CL>>();
+        LinkedBlockingQueue<Connection<CL>> connQueue = new LinkedBlockingQueue<>();
         connQueue.addAll(connections);
 
-        List<OperationResult<R>> results = new ArrayList<OperationResult<R>>();
+        List<OperationResult<R>> results = new ArrayList<>();
 
         DynoException lastException = null;
 
@@ -435,7 +435,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
             // we fail the entire operation on a partial failure. hence need to
             // clean up the rest of the pending connections
         } finally {
-            List<Connection<CL>> remainingConns = new ArrayList<Connection<CL>>();
+            List<Connection<CL>> remainingConns = new ArrayList<>();
             connQueue.drainTo(remainingConns);
             for (Connection<CL> connectionToClose : remainingConns) {
                 try {
@@ -507,7 +507,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
         }
 
         final ExecutorService threadPool = Executors.newFixedThreadPool(Math.max(10, hostsUp.size()));
-        final List<Future<Void>> futures = new ArrayList<Future<Void>>();
+        final List<Future<Void>> futures = new ArrayList<>();
 
         for (final Host host : hostsUp) {
 
@@ -580,7 +580,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
                             HostStatusTracker hostStatus = hostsUpdater.refreshHosts();
                             cpMonitor.setHostCount(hostStatus.getHostCount());
                             Collection<Host> hostsUp = hostStatus.getActiveHosts();
-                            if (hostsUp.size() > 0) {
+                            if (!hostsUp.isEmpty()) {
                                 Logger.debug("Found hosts while IDLING; starting the connection pool");
                                 start().get();
                             }
@@ -637,14 +637,14 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
         if (cpConfiguration.getTokenSupplier() == null) {
             throw new RuntimeException("TokenMapSupplier not configured");
         }
-        HostSelectionWithFallback<CL> selection = new HostSelectionWithFallback<CL>(cpConfiguration, cpMonitor);
+        HostSelectionWithFallback<CL> selection = new HostSelectionWithFallback<>(cpConfiguration, cpMonitor);
         selection.initWithHosts(cpMap);
         return selection;
     }
 
     private Future<Boolean> getEmptyFutureTask(final Boolean condition) {
 
-        FutureTask<Boolean> future = new FutureTask<Boolean>(new Callable<Boolean>() {
+        FutureTask<Boolean> future = new FutureTask<>(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 return condition;
@@ -659,7 +659,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
 
         @Override
         public HostConnectionPool<CL> createHostConnectionPool(Host host, ConnectionPoolImpl<CL> parentPoolImpl) {
-            return new HostConnectionPoolImpl<CL>(host, connFactory, cpConfiguration, cpMonitor);
+            return new HostConnectionPoolImpl<>(host, connFactory, cpConfiguration, cpMonitor);
         }
     }
 
@@ -667,7 +667,7 @@ public class ConnectionPoolImpl<CL> implements ConnectionPool<CL>, TopologyView 
 
         @Override
         public HostConnectionPool<CL> createHostConnectionPool(Host host, ConnectionPoolImpl<CL> parentPoolImpl) {
-            return new SimpleAsyncConnectionPoolImpl<CL>(host, connFactory, cpConfiguration, cpMonitor);
+            return new SimpleAsyncConnectionPoolImpl<>(host, connFactory, cpConfiguration, cpMonitor);
         }
     }
 

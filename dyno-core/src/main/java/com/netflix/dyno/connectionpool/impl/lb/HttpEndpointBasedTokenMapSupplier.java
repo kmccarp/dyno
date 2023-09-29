@@ -63,7 +63,7 @@ public class HttpEndpointBasedTokenMapSupplier extends AbstractTokenMapSupplier 
          * If no port is passed means -1 then we will substitute to defaultPort
          * else the passed one.
          */
-        url = url.replace("{port}", (port > -1) ? Integer.toString(port) : Integer.toString(defaultPort));
+        url = url.replace("{port}", port > -1 ? Integer.toString(port) : Integer.toString(defaultPort));
         serverUrl = url;
     }
 
@@ -96,7 +96,7 @@ public class HttpEndpointBasedTokenMapSupplier extends AbstractTokenMapSupplier 
             } finally {
                 count--;
             }
-        } while ((count > 0));
+        } while (count > 0);
 
         if (lastEx != null) {
             if (lastEx instanceof ConnectTimeoutException) {
@@ -130,7 +130,7 @@ public class HttpEndpointBasedTokenMapSupplier extends AbstractTokenMapSupplier 
 
         HttpResponse response = client.execute(get);
         int statusCode = response.getStatusLine().getStatusCode();
-        if (!(statusCode == 200)) {
+        if (statusCode != 200) {
             Logger.error("Got non 200 status code from " + url);
             return null;
         }
@@ -156,7 +156,7 @@ public class HttpEndpointBasedTokenMapSupplier extends AbstractTokenMapSupplier 
     public Host getRandomHost(Set<Host> activeHosts) {
         Random random = new Random();
 
-        List<Host> hostsUp = new ArrayList<Host>(CollectionUtils.filter(activeHosts, new Predicate<Host>() {
+        List<Host> hostsUp = new ArrayList<>(CollectionUtils.filter(activeHosts, new Predicate<Host>() {
 
             @Override
             public boolean apply(Host x) {
@@ -195,7 +195,7 @@ public class HttpEndpointBasedTokenMapSupplier extends AbstractTokenMapSupplier 
                 count--;
             }
 
-        } while ((count > 0));
+        } while (count > 0);
 
         if (lastEx != null) {
             if (lastEx instanceof ConnectTimeoutException) {

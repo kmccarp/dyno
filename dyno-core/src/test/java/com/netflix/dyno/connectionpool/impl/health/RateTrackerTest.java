@@ -41,7 +41,7 @@ public class RateTrackerTest {
         int numThreads = 5;
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
 
-        final AtomicReference<RateLimitUtil> limiter = new AtomicReference<RateLimitUtil>(RateLimitUtil.create(100));
+        final AtomicReference<RateLimitUtil> limiter = new AtomicReference<>(RateLimitUtil.create(100));
 
         final AtomicBoolean stop = new AtomicBoolean(false);
 

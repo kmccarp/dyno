@@ -82,7 +82,7 @@ public class DynoLockClient {
     private final ExecutorService service;
     private final int quorum;
     // We assume a small amount of clock drift.
-    private final double CLOCK_DRIFT = 0.01;
+    private static final double CLOCK_DRIFT = 0.01;
     private TimeUnit timeoutUnit;
     private long timeout;
     private final ConcurrentHashMap<String, String> resourceKeyMap = new ConcurrentHashMap<>();
@@ -96,7 +96,7 @@ public class DynoLockClient {
         this.timeout = timeout;
         this.timeoutUnit = unit;
         // We want to release all locks in case of a graceful shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> cleanup()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::cleanup));
     }
 
     public void setTimeoutUnit(TimeUnit timeoutUnit) {
@@ -182,7 +182,7 @@ public class DynoLockClient {
      * @return returns true if we were able to successfully acqurie the lock.
      */
     public boolean acquireLock(String resource, long ttlMS, Consumer<String> failure) {
-        return acquireLockWithExtension(resource, ttlMS, (r) -> {
+        return acquireLockWithExtension(resource, ttlMS, r -> {
             releaseLock(r);
             failure.accept(r);
         });
@@ -290,7 +290,7 @@ public class DynoLockClient {
                                 String result = r.getResult().toString();
                                 // The lua script returns 0 if we have lost the lock or we get -2 if the ttl expired on
                                 // the key when we checked for the pttl.
-                                if (result.equals("0") || result.equals("-2")) {
+                                if ("0".equals(result) || "-2".equals(result)) {
                                     logger.info("Lock not present on host");
                                 } else {
                                     resultTtls.add(Long.valueOf(result));
@@ -415,8 +415,9 @@ public class DynoLockClient {
 
             DynoJedisUtils.updateConnectionPoolConfig(cpConfig, hostSupplier, tokenMapSupplier, eurekaClient,
                     clusterName);
-            if (tokenMapSupplier == null)
+            if (tokenMapSupplier == null) {
                 tokenMapSupplier = cpConfig.getTokenSupplier();
+            }
             final ConnectionPool<Jedis> pool = DynoJedisUtils.createConnectionPool(appName, opMonitor, cpMonitor,
                     cpConfig, null);
             VotingHostsFromTokenRange votingHostSelector = new VotingHostsFromTokenRange(hostSupplier, tokenMapSupplier,

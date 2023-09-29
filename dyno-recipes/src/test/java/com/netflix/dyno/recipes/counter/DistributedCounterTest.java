@@ -69,7 +69,7 @@ public class DistributedCounterTest {
 
         List<TokenPoolTopology.TokenStatus> tokenStatusList = Arrays.asList(token1, token2, token3, token4);
 
-        topology = new HashMap<String, List<TokenPoolTopology.TokenStatus>>();
+        topology = new HashMap<>();
         topology.put("us-east-1c", tokenStatusList);
 
         when(topologyView.getTokenForKey(anyString())).thenAnswer(new Answer<Long>() {

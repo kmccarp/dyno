@@ -50,9 +50,9 @@ public class ConnectionPoolHealthTracker<CL> implements HealthTracker<CL> {
     private final ConnectionPoolConfiguration cpConfiguration;
     private final ScheduledExecutorService threadPool;
     private final AtomicBoolean stop = new AtomicBoolean(false);
-    private final ConcurrentHashMap<Host, ErrorMonitor> errorRates = new ConcurrentHashMap<Host, ErrorMonitor>();
-    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> reconnectingPools = new ConcurrentHashMap<Host, HostConnectionPool<CL>>();
-    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> pingingPools = new ConcurrentHashMap<Host, HostConnectionPool<CL>>();
+    private final ConcurrentHashMap<Host, ErrorMonitor> errorRates = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> reconnectingPools = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Host, HostConnectionPool<CL>> pingingPools = new ConcurrentHashMap<>();
 
     private final AtomicBoolean startedPing = new AtomicBoolean(false);
 

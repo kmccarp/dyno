@@ -224,7 +224,7 @@ public class RedisAuthenticationIntegrationTest {
                 .build();
     }
 
-    private static class TokenMapSupplierImpl implements TokenMapSupplier {
+    private static final class TokenMapSupplierImpl implements TokenMapSupplier {
 
         private final HostToken localHostToken;
 

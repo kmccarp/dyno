@@ -73,7 +73,7 @@ public class RateLimitUtilTest {
 
         long duration = end.get() - start;
         long totalCount = counter.get();
-        double resultRps = ((double) (totalCount) / ((double) duration / 1000.0));
+        double resultRps = (double) (totalCount) / ((double) duration / 1000.0);
         System.out.println("Total Count : " + totalCount + ", duration:  " + duration + ", result rps: " + resultRps);
 
         double percentageDiff = Math.abs(expectedRps - resultRps) * 100 / resultRps;

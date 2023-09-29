@@ -51,22 +51,28 @@ public class HostToken implements Comparable<Long> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((host == null) ? 0 : host.hashCode());
-        result = prime * result + ((token == null) ? 0 : token.hashCode());
+        result = prime * result + (host == null ? 0 : host.hashCode());
+        result = prime * result + (token == null ? 0 : token.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
 
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
 
         HostToken other = (HostToken) obj;
         boolean equals = true;
-        equals &= (token != null) ? (token.equals(other.token)) : (other.token == null);
-        equals &= (host != null) ? (host.equals(other.host)) : (other.host == null);
+        equals &= token != null ? (token.equals(other.token)) : (other.token == null);
+        equals &= host != null ? (host.equals(other.host)) : (other.host == null);
         return equals;
     }
 

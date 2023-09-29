@@ -21,9 +21,9 @@ import java.util.stream.IntStream;
 
 public class VotingHostsFromTokenRangeTest {
 
-    private String r1 = "rack1";
-    private String r2 = "rack2";
-    private String r3 = "rack3";
+    private final String r1 = "rack1";
+    private final String r2 = "rack2";
+    private final String r3 = "rack3";
     private TokenMapSupplier tokenMapSupplier;
     private HostSupplier hostSupplier;
     private VotingHostsSelector votingHostsSelector;
@@ -65,7 +65,7 @@ public class VotingHostsFromTokenRangeTest {
     private void testVotingSize(int votingSize) {
         votingHostsSelector = new VotingHostsFromTokenRange(hostSupplier, tokenMapSupplier, votingSize);
         CircularList<Host> hosts = votingHostsSelector.getVotingHosts();
-        Set<String> resultHosts = hosts.getEntireList().stream().map(h -> h.getHostName()).collect(Collectors.toSet());
+        Set<String> resultHosts = hosts.getEntireList().stream().map(Host::getHostName).collect(Collectors.toSet());
         Assert.assertEquals(votingSize, resultHosts.size());
         Assert.assertEquals(votingSize,
                 hosts.getEntireList().subList(0, votingSize).stream().filter(h1 -> resultHosts.contains(h1.getHostName())).count());
@@ -73,6 +73,6 @@ public class VotingHostsFromTokenRangeTest {
 
     @Test
     public void getVotingSize() {
-        IntStream.range(1, 6).filter(i -> i%2 != 0).forEach(i -> testVotingSize(i));
+        IntStream.range(1, 6).filter(i -> i%2 != 0).forEach(this::testVotingSize);
     }
 }

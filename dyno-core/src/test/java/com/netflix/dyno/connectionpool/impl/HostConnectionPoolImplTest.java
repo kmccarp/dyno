@@ -55,9 +55,9 @@ public class HostConnectionPoolImplTest {
     //private static AtomicBoolean stop = new AtomicBoolean(false);
     private static HostConnectionPoolImpl<TestClient> pool;
     private static ExecutorService threadPool;
-    private static int numWorkers = 10;
+    private static final int numWorkers = 10;
 
-    private static class TestConnection implements Connection<TestClient> {
+    private static final class TestConnection implements Connection<TestClient> {
 
         private DynoConnectException ex;
         private HostConnectionPool<TestClient> myPool;
@@ -114,7 +114,7 @@ public class HostConnectionPoolImplTest {
         }
     }
 
-    private static ConnectionFactory<TestClient> connFactory = new ConnectionFactory<TestClient>() {
+    private static final ConnectionFactory<TestClient> connFactory = new ConnectionFactory<TestClient>() {
 
         @Override
         public Connection<TestClient> createConnection(HostConnectionPool<TestClient> pool) throws DynoConnectException {
@@ -133,7 +133,7 @@ public class HostConnectionPoolImplTest {
 
     };
 
-    private static ConnectionPoolConfigurationImpl config = new ConnectionPoolConfigurationImpl("TestClient");
+    private static final ConnectionPoolConfigurationImpl config = new ConnectionPoolConfigurationImpl("TestClient");
     private static CountingConnectionPoolMonitor cpMonitor = new CountingConnectionPoolMonitor();
 
     @BeforeClass
@@ -165,7 +165,7 @@ public class HostConnectionPoolImplTest {
         final BasicResult result = new BasicResult();
         final TestControl control = new TestControl(4);
 
-        pool = new HostConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new HostConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         int numConns = pool.primeConnections();
 
         for (int i = 0; i < 4; i++) {
@@ -196,7 +196,7 @@ public class HostConnectionPoolImplTest {
     @Test
     public void testPoolTimeouts() throws Exception {
 
-        pool = new HostConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new HostConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         int numConns = pool.primeConnections();
 
         final BasicResult result = new BasicResult();
@@ -232,7 +232,7 @@ public class HostConnectionPoolImplTest {
     @Test
     public void testMarkHostAsDown() throws Exception {
 
-        pool = new HostConnectionPoolImpl<TestClient>(TestHost, connFactory, config, cpMonitor);
+        pool = new HostConnectionPoolImpl<>(TestHost, connFactory, config, cpMonitor);
         int numConns = pool.primeConnections();
 
         final BasicResult result = new BasicResult();
@@ -267,7 +267,7 @@ public class HostConnectionPoolImplTest {
         Assert.assertTrue(result.failureCount.get() > 0);
     }
 
-    private class BasicWorker implements Callable<Void> {
+    private final class BasicWorker implements Callable<Void> {
 
         private final BasicResult result;
         private final TestControl control;
@@ -316,7 +316,7 @@ public class HostConnectionPoolImplTest {
         }
     }
 
-    private class TestControl {
+    private final class TestControl {
 
         private final AtomicBoolean stop = new AtomicBoolean(false);
         private final CountDownLatch latch;
@@ -342,7 +342,7 @@ public class HostConnectionPoolImplTest {
         }
     }
 
-    private class BasicResult {
+    private final class BasicResult {
 
         private final AtomicInteger opCount = new AtomicInteger(0);
         private final AtomicInteger successCount = new AtomicInteger(0);

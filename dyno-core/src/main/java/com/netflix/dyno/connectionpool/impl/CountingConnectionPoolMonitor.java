@@ -69,7 +69,7 @@ public class CountingConnectionPoolMonitor implements ConnectionPoolMonitor {
     // in our hostStats as 'down'.
     private final AtomicLong hostSupplierCount = new AtomicLong();
 
-    private final ConcurrentHashMap<Host, HostConnectionStats> hostStats = new ConcurrentHashMap<Host, HostConnectionStats>();
+    private final ConcurrentHashMap<Host, HostConnectionStats> hostStats = new ConcurrentHashMap<>();
 
     public CountingConnectionPoolMonitor() {
     }
@@ -262,30 +262,7 @@ public class CountingConnectionPoolMonitor implements ConnectionPoolMonitor {
 
     public String toString() {
         // Build the complete status string
-        return new StringBuilder()
-                .append("CountingConnectionPoolMonitor(")
-                .append("Connections[")
-                .append("open=").append(getNumOpenConnections())
-                .append(",busy=").append(getNumBusyConnections())
-                .append(",create=").append(connectionCreateCount.get())
-                .append(",close=").append(connectionClosedCount.get())
-                .append(",createFailed=").append(connectionCreateFailureCount.get())
-                .append(",borrow=").append(connectionBorrowCount.get())
-                .append(",return=").append(connectionReturnCount.get())
-                .append(",recycle=").append(connectionRecycledCount.get())
-                .append("], Operations[")
-                .append("success=").append(operationSuccessCount.get())
-                .append(",failure=").append(operationFailureCount.get())
-                .append(",optimeout=").append(operationTimeoutCount.get())
-                .append(",timeout=").append(socketTimeoutCount.get())
-                .append(",failover=").append(operationFailoverCount.get())
-                .append(",nohosts=").append(noHostsCount.get())
-                .append(",unknown=").append(unknownErrorCount.get())
-                .append(",exhausted=").append(poolExhastedCount.get())
-                .append("], Hosts[")
-                .append("up=").append(getHostUpCount())
-                .append(",down=").append(getHostDownCount())
-                .append("])").toString();
+        return "CountingConnectionPoolMonitor(" + "Connections[" + "open=" + getNumOpenConnections() + ",busy=" + getNumBusyConnections() + ",create=" + connectionCreateCount.get() + ",close=" + connectionClosedCount.get() + ",createFailed=" + connectionCreateFailureCount.get() + ",borrow=" + connectionBorrowCount.get() + ",return=" + connectionReturnCount.get() + ",recycle=" + connectionRecycledCount.get() + "], Operations[" + "success=" + operationSuccessCount.get() + ",failure=" + operationFailureCount.get() + ",optimeout=" + operationTimeoutCount.get() + ",timeout=" + socketTimeoutCount.get() + ",failover=" + operationFailoverCount.get() + ",nohosts=" + noHostsCount.get() + ",unknown=" + unknownErrorCount.get() + ",exhausted=" + poolExhastedCount.get() + "], Hosts[" + "up=" + getHostUpCount() + ",down=" + getHostDownCount() + "])";
     }
 
     @Override
@@ -342,7 +319,7 @@ public class CountingConnectionPoolMonitor implements ConnectionPoolMonitor {
         return (HostConnectionStatsImpl) hostStats.get(host);
     }
 
-    private class HostConnectionStatsImpl implements HostConnectionStats {
+    private final class HostConnectionStatsImpl implements HostConnectionStats {
 
         private AtomicBoolean hostUp = new AtomicBoolean(true);
         private final String name;
