@@ -152,14 +152,14 @@ public class DynoDualWriterClient extends DynoJedisClient {
     private boolean sendShadowRequest(String key) {
         return this.getConnPool().getConfiguration().isDualWriteEnabled() &&
                 !this.getConnPool().isIdle() &&
-                this.getConnPool().getActivePools().size() > 0 &&
+                !this.getConnPool().getActivePools().isEmpty() &&
                 dial.isInRange(key);
     }
 
     private boolean sendShadowRequest(byte[] key) {
         return this.getConnPool().getConfiguration().isDualWriteEnabled() &&
                 !this.getConnPool().isIdle() &&
-                this.getConnPool().getActivePools().size() > 0 &&
+                !this.getConnPool().getActivePools().isEmpty() &&
                 dial.isInRange(key);
     }
 

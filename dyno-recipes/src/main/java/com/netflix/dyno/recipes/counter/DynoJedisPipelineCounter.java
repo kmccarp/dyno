@@ -54,7 +54,7 @@ public class DynoJedisPipelineCounter extends DynoJedisCounter {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DynoJedisPipelineCounter.class);
 
-    private final LinkedBlockingQueue<Command> queue = new LinkedBlockingQueue<Command>();
+    private final LinkedBlockingQueue<Command> queue = new LinkedBlockingQueue<>();
 
     private final ExecutorService counterThreadPool = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override
@@ -137,7 +137,7 @@ public class DynoJedisPipelineCounter extends DynoJedisCounter {
          * Used to ensure there are operations to sync in the pipeline. This is not
          * an optimization; the pipeline can block if multiple SYNCs are processed
          */
-        private int pipelineOps = 0;
+        private int pipelineOps;
 
         /**
          * Contains a mapping of sharded-key to pipeline.
@@ -148,9 +148,9 @@ public class DynoJedisPipelineCounter extends DynoJedisCounter {
         public Consumer(final LinkedBlockingQueue<Command> queue, final List<String> keys) {
             this.queue = queue;
             this.keys = keys;
-            keysAndPipelines = new ArrayList<Tuple<String, DynoJedisPipeline>>(keys.size());
+            keysAndPipelines = new ArrayList<>(keys.size());
             for (String key : keys) {
-                keysAndPipelines.add(new Tuple<String, DynoJedisPipeline>(key, client.pipelined()));
+                keysAndPipelines.add(new Tuple<>(key, client.pipelined()));
             }
         }
 
@@ -177,9 +177,9 @@ public class DynoJedisPipelineCounter extends DynoJedisCounter {
                                     tuple._2().sync();
                                 }
 
-                                keysAndPipelines = new ArrayList<Tuple<String, DynoJedisPipeline>>(keys.size());
+                                keysAndPipelines = new ArrayList<>(keys.size());
                                 for (String key : keys) {
-                                    keysAndPipelines.add(new Tuple<String, DynoJedisPipeline>(key, client.pipelined()));
+                                    keysAndPipelines.add(new Tuple<>(key, client.pipelined()));
                                 }
                                 pipelineOps = 0;
                             }

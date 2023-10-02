@@ -32,7 +32,7 @@ public class DynoRedissonDemoResource {
 
     private static final Logger Logger = LoggerFactory.getLogger(DynoRedissonDemoResource.class);
 
-    private static final AtomicReference<RedissonDemo> demo = new AtomicReference<RedissonDemo>(null);
+    private static final AtomicReference<RedissonDemo> demo = new AtomicReference<>(null);
 
     public DynoRedissonDemoResource() {
     }

@@ -30,7 +30,7 @@ public class OperationResultImplTest {
     public void testProcess() throws Exception {
 
         OperationMonitor monitor = new LastOperationMonitor();
-        OperationResultImpl<Integer> opResult = new OperationResultImpl<Integer>("test", 11, monitor);
+        OperationResultImpl<Integer> opResult = new OperationResultImpl<>("test", 11, monitor);
         Host host = new HostBuilder().setHostname("testHost").setIpAddress("rand_ip").setPort(1234).setRack("rand_rack").createHost();
 
         opResult.attempts(2)

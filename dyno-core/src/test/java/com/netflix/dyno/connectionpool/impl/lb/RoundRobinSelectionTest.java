@@ -77,7 +77,7 @@ public class RoundRobinSelectionTest {
     @Test
     public void testRoundRobin() throws Exception {
 
-        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<HostToken, HostConnectionPool<Integer>>(
+        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<>(
                 new Comparator<HostToken>() {
 
                     @Override
@@ -91,10 +91,10 @@ public class RoundRobinSelectionTest {
         pools.put(h2, getMockHostConnectionPool(h2));
         pools.put(h3, getMockHostConnectionPool(h3));
 
-        RoundRobinSelection<Integer> rrSelection = new RoundRobinSelection<Integer>();
+        RoundRobinSelection<Integer> rrSelection = new RoundRobinSelection<>();
         rrSelection.initWithHosts(pools);
 
-        Map<String, Integer> result = new HashMap<String, Integer>();
+        Map<String, Integer> result = new HashMap<>();
 
         runTest(300, result, rrSelection);
         verifyTest(result, hostCount("h1", 100), hostCount("h2", 100), hostCount("h3", 100));
@@ -135,7 +135,7 @@ public class RoundRobinSelectionTest {
         }
     }
 
-    private static class HostCount {
+    private static final class HostCount {
         private final String host;
         private final Integer count;
 

@@ -35,7 +35,7 @@ public class CircularList<T> {
 
     // The thread safe reference to the inner list. Maintaining an atomic ref at this level helps enabling swapping out of the entire list
     // underneath when there is a change to the list such as element addition or removal
-    private final AtomicReference<InnerList> ref = new AtomicReference<InnerList>(null);
+    private final AtomicReference<InnerList> ref = new AtomicReference<>(null);
 
     /**
      * Constructor
@@ -77,7 +77,7 @@ public class CircularList<T> {
             return;
         }
 
-        List<T> newList = new ArrayList<T>(origList);
+        List<T> newList = new ArrayList<>(origList);
         newList.add(element);
 
         swapWithList(newList);
@@ -95,7 +95,7 @@ public class CircularList<T> {
             return;
         }
 
-        List<T> newList = new ArrayList<T>(origList);
+        List<T> newList = new ArrayList<>(origList);
         newList.remove(element);
 
         swapWithList(newList);
@@ -126,7 +126,7 @@ public class CircularList<T> {
      *
      * @author poberai
      */
-    private class InnerList {
+    private final class InnerList {
         private final List<T> list;
         private final Integer size;
 
@@ -150,7 +150,7 @@ public class CircularList<T> {
         }
 
         private T getNextElement() {
-            return (list == null || list.size() == 0) ? null : list.get(getNextIndex());
+            return list == null || list.isEmpty() ? null : list.get(getNextIndex());
         }
 
         private List<T> getList() {

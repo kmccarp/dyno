@@ -72,7 +72,7 @@ public class ConnectionPoolImplTest {
     private static ConnectionPoolConfigurationImpl cpConfig = new ConnectionPoolConfigurationImpl("TestClient");
     private static CountingConnectionPoolMonitor cpMonitor = new CountingConnectionPoolMonitor();
 
-    private static class TestConnection implements Connection<TestClient> {
+    private static final class TestConnection implements Connection<TestClient> {
 
         private AtomicInteger ops = new AtomicInteger(0);
         private DynoConnectException ex;
@@ -89,7 +89,7 @@ public class ConnectionPoolImplTest {
             try {
                 if (op != null) {
                     R r = op.execute(client, null);
-                    return new OperationResultImpl<R>("Test", r, null);
+                    return new OperationResultImpl<>("Test", r, null);
                 }
             } catch (DynoConnectException e) {
                 ex = e;
@@ -138,7 +138,7 @@ public class ConnectionPoolImplTest {
         }
     }
 
-    private static ConnectionFactory<TestClient> connFactory = new ConnectionFactory<TestClient>() {
+    private static final ConnectionFactory<TestClient> connFactory = new ConnectionFactory<TestClient>() {
 
         @Override
         public Connection<TestClient> createConnection(HostConnectionPool<TestClient> pool) throws DynoConnectException, ThrottledException {
@@ -157,16 +157,16 @@ public class ConnectionPoolImplTest {
 
     };
 
-    private Host host1 = new HostBuilder().setHostname("host1").setPort(8080).setRack("localRack").setStatus(Status.Up).createHost();
-    private Host host2 = new HostBuilder().setHostname("host2").setPort(8080).setRack("localRack").setStatus(Status.Up).createHost();
-    private Host host3 = new HostBuilder().setHostname("host3").setPort(8080).setRack("localRack").setStatus(Status.Up).createHost();
+    private final Host host1 = new HostBuilder().setHostname("host1").setPort(8080).setRack("localRack").setStatus(Status.Up).createHost();
+    private final Host host2 = new HostBuilder().setHostname("host2").setPort(8080).setRack("localRack").setStatus(Status.Up).createHost();
+    private final Host host3 = new HostBuilder().setHostname("host3").setPort(8080).setRack("localRack").setStatus(Status.Up).createHost();
 
     // Used for Cross Rack fallback testing
-    private Host host4 = new HostBuilder().setHostname("host4").setPort(8080).setRack("remoteRack").setStatus(Status.Up).createHost();
-    private Host host5 = new HostBuilder().setHostname("host5").setPort(8080).setRack("remoteRack").setStatus(Status.Up).createHost();
-    private Host host6 = new HostBuilder().setHostname("host6").setPort(8080).setRack("remoteRack").setStatus(Status.Up).createHost();
+    private final Host host4 = new HostBuilder().setHostname("host4").setPort(8080).setRack("remoteRack").setStatus(Status.Up).createHost();
+    private final Host host5 = new HostBuilder().setHostname("host5").setPort(8080).setRack("remoteRack").setStatus(Status.Up).createHost();
+    private final Host host6 = new HostBuilder().setHostname("host6").setPort(8080).setRack("remoteRack").setStatus(Status.Up).createHost();
 
-    private final List<Host> hostSupplierHosts = new ArrayList<Host>();
+    private final List<Host> hostSupplierHosts = new ArrayList<>();
 
     @Before
     public void beforeTest() {
@@ -194,7 +194,7 @@ public class ConnectionPoolImplTest {
     @Test
     public void testConnectionPoolNormal() throws Exception {
 
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
         hostSupplierHosts.add(host1);
         hostSupplierHosts.add(host2);
 
@@ -259,7 +259,7 @@ public class ConnectionPoolImplTest {
 
          cqlsh:dyno_bootstrap>
          */
-        final Map<Host, HostToken> tokenMap = new HashMap<Host, HostToken>();
+        final Map<Host, HostToken> tokenMap = new HashMap<>();
 
         tokenMap.put(host1, new HostToken(309687905L, host1));
         tokenMap.put(host2, new HostToken(1383429731L, host2));
@@ -273,7 +273,7 @@ public class ConnectionPoolImplTest {
             @Override
             public List<HostToken> getTokens(Set<Host> activeHosts) {
                 if (activeHosts.size() < tokenMap.size()) {
-                    List<HostToken> hostTokens = new ArrayList<HostToken>(activeHosts.size());
+                    List<HostToken> hostTokens = new ArrayList<>(activeHosts.size());
                     Iterator<Host> iterator = activeHosts.iterator();
                     while (iterator.hasNext()) {
                         Host activeHost = (Host) iterator.next();
@@ -281,7 +281,7 @@ public class ConnectionPoolImplTest {
                     }
                     return hostTokens;
                 } else {
-                    return new ArrayList<HostToken>(tokenMap.values());
+                    return new ArrayList<>(tokenMap.values());
                 }
             }
 
@@ -296,7 +296,7 @@ public class ConnectionPoolImplTest {
     @Test
     public void testAddingNewHosts() throws Exception {
 
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
         hostSupplierHosts.add(host1);
         hostSupplierHosts.add(host2);
 
@@ -344,7 +344,7 @@ public class ConnectionPoolImplTest {
     @Test
     public void testRemovingHosts() throws Exception {
 
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
         hostSupplierHosts.add(host1);
         hostSupplierHosts.add(host2);
         hostSupplierHosts.add(host3);
@@ -381,7 +381,7 @@ public class ConnectionPoolImplTest {
     @Test(expected = NoAvailableHostsException.class)
     public void testNoAvailableHosts() throws Exception {
 
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
         pool.start();
 
         try {
@@ -393,7 +393,7 @@ public class ConnectionPoolImplTest {
 
     @Test
     public void testIdleWhenNoAvailableHosts() throws Exception {
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
 
         try {
             pool.start();
@@ -412,7 +412,7 @@ public class ConnectionPoolImplTest {
     @Test
     public void testPoolTimeout() throws Exception {
 
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
         hostSupplierHosts.add(host1);
         hostSupplierHosts.add(host2);
         hostSupplierHosts.add(host3);
@@ -462,7 +462,7 @@ public class ConnectionPoolImplTest {
 
     @Test(expected = PoolOfflineException.class)
     public void testPoolOffline() {
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
         hostSupplierHosts.add(host1);
 
         pool.start();
@@ -496,7 +496,7 @@ public class ConnectionPoolImplTest {
 
         errConfig.addThreshold(10, 1, 100);
 
-        final AtomicReference<String> badHost = new AtomicReference<String>();
+        final AtomicReference<String> badHost = new AtomicReference<>();
 
         final ConnectionFactory<TestClient> badConnectionFactory = new ConnectionFactory<TestClient>() {
 
@@ -527,7 +527,7 @@ public class ConnectionPoolImplTest {
 
         };
 
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(badConnectionFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(badConnectionFactory, cpConfig, cpMonitor);
         hostSupplierHosts.add(host1);
         hostSupplierHosts.add(host2);
         hostSupplierHosts.add(host3);
@@ -578,7 +578,7 @@ public class ConnectionPoolImplTest {
         cpConfig.setRetryPolicyFactory(rFactory);
         int numHosts = 6;
 
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
         hostSupplierHosts.add(host1);
         hostSupplierHosts.add(host2);
         hostSupplierHosts.add(host3);
@@ -658,7 +658,7 @@ public class ConnectionPoolImplTest {
         };
 
         final ConnectionPoolImpl<TestClient> pool =
-                new ConnectionPoolImpl<TestClient>(badConnectionFactory, cpConfig.setRetryPolicyFactory(rFactory), cpMonitor);
+                new ConnectionPoolImpl<>(badConnectionFactory, cpConfig.setRetryPolicyFactory(rFactory), cpMonitor);
         hostSupplierHosts.add(host1);
 
         pool.start();
@@ -677,7 +677,7 @@ public class ConnectionPoolImplTest {
     @Test(expected = NoAvailableHostsException.class)
     public void testHostsDownDuringStartup() {
 
-        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<TestClient>(connFactory, cpConfig, cpMonitor);
+        final ConnectionPoolImpl<TestClient> pool = new ConnectionPoolImpl<>(connFactory, cpConfig, cpMonitor);
 
         hostSupplierHosts.add(new HostBuilder().setHostname("host1_down").setPort(8080).setRack("localRack").setStatus(Status.Down).createHost());
         hostSupplierHosts.add(new HostBuilder().setHostname("host2_down").setPort(8080).setRack("localRack").setStatus(Status.Down).createHost());

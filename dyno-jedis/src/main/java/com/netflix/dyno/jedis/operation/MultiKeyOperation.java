@@ -19,7 +19,7 @@ public abstract class MultiKeyOperation<T> implements Operation<Jedis, T> {
     private final OpName op;
 
     public MultiKeyOperation(final List keys, final OpName o) {
-        Object firstKey = (keys != null && keys.size() > 0) ? keys.get(0) : null;
+        Object firstKey = keys != null && !keys.isEmpty() ? keys.get(0) : null;
 
         if (firstKey != null) {
             if (firstKey instanceof String) {//string key
@@ -51,11 +51,11 @@ public abstract class MultiKeyOperation<T> implements Operation<Jedis, T> {
      */
     @Override
     public String getStringKey() {
-        return (this.keys != null) ? this.keys.get(0) : null;
+        return this.keys != null ? this.keys.get(0) : null;
     }
 
     public byte[] getBinaryKey() {
-        return (binaryKeys != null) ? binaryKeys.get(0) : null;
+        return binaryKeys != null ? binaryKeys.get(0) : null;
     }
 
 }

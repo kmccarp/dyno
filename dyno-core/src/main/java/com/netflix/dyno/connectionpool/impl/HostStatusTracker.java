@@ -45,8 +45,8 @@ public class HostStatusTracker {
     private static final Logger logger = LoggerFactory.getLogger(HostStatusTracker.class);
 
     // the set of active and inactive hosts
-    private final Set<Host> activeHosts = new HashSet<Host>();
-    private final Set<Host> inactiveHosts = new HashSet<Host>();
+    private final Set<Host> activeHosts = new HashSet<>();
+    private final Set<Host> inactiveHosts = new HashSet<>();
 
     public HostStatusTracker() {
     }
@@ -67,8 +67,8 @@ public class HostStatusTracker {
      */
     private void verifyMutuallyExclusive(Collection<Host> A, Collection<Host> B) {
 
-        Set<Host> left = new HashSet<Host>(A);
-        Set<Host> right = new HashSet<Host>(B);
+        Set<Host> left = new HashSet<>(A);
+        Set<Host> right = new HashSet<>(B);
 
         boolean modified = left.removeAll(right);
         if (modified) {
@@ -113,7 +113,7 @@ public class HostStatusTracker {
         }
 
         // Check for condition 2.
-        Set<Host> prevActiveHosts = new HashSet<Host>(activeHosts);
+        Set<Host> prevActiveHosts = new HashSet<>(activeHosts);
         prevActiveHosts.removeAll(hostsUp);
 
         newInactiveHostsFound = !prevActiveHosts.isEmpty();
@@ -156,10 +156,10 @@ public class HostStatusTracker {
 
         verifyMutuallyExclusive(hostsUp, hostsDown);
 
-        Set<Host> nextActiveHosts = new HashSet<Host>(hostsUp);
+        Set<Host> nextActiveHosts = new HashSet<>(hostsUp);
 
         // Get the hosts that are currently down
-        Set<Host> nextInactiveHosts = new HashSet<Host>(hostsDown);
+        Set<Host> nextInactiveHosts = new HashSet<>(hostsDown);
 
         // add any previous hosts that were currently down iff they are still reported by the HostSupplier
         Set<Host> union = new HashSet<>(hostsUp);
@@ -180,7 +180,7 @@ public class HostStatusTracker {
         }
 
         // Now add any host that is not in the new active hosts set and that was in the previous active set
-        Set<Host> prevActiveHosts = new HashSet<Host>(activeHosts);
+        Set<Host> prevActiveHosts = new HashSet<>(activeHosts);
         prevActiveHosts.removeAll(hostsUp);
 
         // If anyone is remaining in the prev set then add it to the inactive set, since it has gone away
