@@ -62,7 +62,7 @@ public class TokenAwareSelectionHastagTest {
     @Test
     public void testTokenAwareWithHashtag() throws Exception {
 
-        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<HostToken, HostConnectionPool<Integer>>(
+        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<>(
                 new Comparator<HostToken>() {
 
                     @Override
@@ -78,10 +78,10 @@ public class TokenAwareSelectionHastagTest {
 
         String hashtag = host1.getHost().getHashtag();
 
-        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<Integer>();
+        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<>();
         tokenAwareSelector.initWithHosts(pools);
 
-        Map<String, Integer> result = new HashMap<String, Integer>();
+        Map<String, Integer> result = new HashMap<>();
         runTest(0L, 100000L, result, tokenAwareSelector, hashtag, 0);
 
         System.out.println("Token distribution: " + result);
@@ -92,7 +92,7 @@ public class TokenAwareSelectionHastagTest {
     @Test
     public void testTokenAwareWithEmptyHashtag() throws Exception {
 
-        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<HostToken, HostConnectionPool<Integer>>(
+        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<>(
                 new Comparator<HostToken>() {
 
                     @Override
@@ -108,10 +108,10 @@ public class TokenAwareSelectionHastagTest {
 
         String hashtag = host5.getHost().getHashtag();
 
-        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<Integer>();
+        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<>();
         tokenAwareSelector.initWithHosts(pools);
 
-        Map<String, Integer> result = new HashMap<String, Integer>();
+        Map<String, Integer> result = new HashMap<>();
         runTest(0L, 100000L, result, tokenAwareSelector, hashtag, 1);
 
         System.out.println("Token distribution: " + result);
@@ -122,7 +122,7 @@ public class TokenAwareSelectionHastagTest {
     @Test
     public void testTokenAwareWithMultipleHashtag() throws Exception {
 
-        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<HostToken, HostConnectionPool<Integer>>(
+        TreeMap<HostToken, HostConnectionPool<Integer>> pools = new TreeMap<>(
                 new Comparator<HostToken>() {
 
                     @Override
@@ -138,10 +138,10 @@ public class TokenAwareSelectionHastagTest {
 
         String hashtag = host9.getHost().getHashtag();
 
-        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<Integer>();
+        TokenAwareSelection<Integer> tokenAwareSelector = new TokenAwareSelection<>();
         tokenAwareSelector.initWithHosts(pools);
 
-        Map<String, Integer> result = new HashMap<String, Integer>();
+        Map<String, Integer> result = new HashMap<>();
         runTest(0L, 100000L, result, tokenAwareSelector, hashtag, 2);
 
         System.out.println("Token distribution: " + result);
@@ -278,7 +278,7 @@ public class TokenAwareSelectionHastagTest {
             count++;
         }
 
-        double mean = (sum / count);
+        double mean = sum / count;
 
         for (int n : values) {
             double percentageDiff = 100 * ((mean - n) / mean);

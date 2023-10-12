@@ -27,6 +27,6 @@ public interface HostConnectionPoolFactory<CL> {
         Async,
 
         /** Synchronous, blocking instance */
-        Sync;
+        Sync
     }
 }

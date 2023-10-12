@@ -30,7 +30,7 @@ public class FutureOperationalResultImplTest {
     @Test
     public void testFutureResult() throws Exception {
 
-        final FutureTask<Integer> futureTask = new FutureTask<Integer>(new Callable<Integer>() {
+        final FutureTask<Integer> futureTask = new FutureTask<>(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
                 return 11;
@@ -39,7 +39,7 @@ public class FutureOperationalResultImplTest {
 
         LastOperationMonitor opMonitor = new LastOperationMonitor();
         FutureOperationalResultImpl<Integer> futureResult =
-                new FutureOperationalResultImpl<Integer>("test", futureTask, System.currentTimeMillis(), opMonitor);
+                new FutureOperationalResultImpl<>("test", futureTask, System.currentTimeMillis(), opMonitor);
 
         ExecutorService threadPool = Executors.newSingleThreadExecutor();
 

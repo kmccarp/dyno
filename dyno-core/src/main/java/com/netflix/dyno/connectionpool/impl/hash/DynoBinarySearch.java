@@ -53,7 +53,7 @@ import com.netflix.dyno.connectionpool.HashPartitioner;
  */
 public class DynoBinarySearch<T extends Comparable<T>> {
 
-    private final List<DynoTokenRange<T>> rangeList = new ArrayList<DynoTokenRange<T>>();
+    private final List<DynoTokenRange<T>> rangeList = new ArrayList<>();
 
     private final AtomicBoolean listEmpty = new AtomicBoolean(false);
 
@@ -127,8 +127,8 @@ public class DynoBinarySearch<T extends Comparable<T>> {
 
         final T start;
         final T end;
-        boolean isFirstRange = false;
-        boolean isLastRange = false;
+        boolean isFirstRange;
+        boolean isLastRange;
 
         DynoTokenRange(T s, T e) {
             this.start = s;

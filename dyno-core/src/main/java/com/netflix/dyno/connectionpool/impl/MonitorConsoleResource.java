@@ -111,7 +111,7 @@ public class MonitorConsoleResource {
 
     private Map<String, String> getTokenStatusMap(List<TokenStatus> tokens) {
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (TokenStatus tokenStatus : tokens) {
             String token = tokenStatus.getToken().toString();
             HostConnectionPool<?> hostPool = tokenStatus.getHostPool();

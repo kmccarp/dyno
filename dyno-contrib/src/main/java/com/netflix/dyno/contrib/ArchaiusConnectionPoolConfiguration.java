@@ -295,7 +295,7 @@ public class ArchaiusConnectionPoolConfiguration extends ConnectionPoolConfigura
 
         String retryPolicy = DynamicPropertyFactory.getInstance().getStringProperty(propertyPrefix + ".retryPolicy", "RunOnce").get();
 
-        if (retryPolicy.equals("RunOnce")) {
+        if ("RunOnce".equals(retryPolicy)) {
             return new RunOnce.RetryFactory();
         }
 

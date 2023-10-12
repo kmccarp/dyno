@@ -139,7 +139,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
         // Doing this since not all tokens are received from an individual call
         // to a dynomite server
         // hence trying them all
-        Set<HostToken> allTokens = new HashSet<HostToken>();
+        Set<HostToken> allTokens = new HashSet<>();
         Set<Host> remainingHosts = new HashSet<>(activeHosts);
 
         for (Host host : activeHosts) {
@@ -149,7 +149,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
                     allTokens.add(hToken);
                     remainingHosts.remove(hToken.getHost());
                 }
-                if (remainingHosts.size() == 0) {
+                if (remainingHosts.isEmpty()) {
                     Logger.info("Received token information for " + allTokens.size() + " hosts. Not querying other hosts");
                     break;
                 }
@@ -163,7 +163,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
     @Override
     public HostToken getTokenForHost(final Host host, final Set<Host> activeHosts) {
         String jsonPayload;
-        if (activeHosts.size() == 0) {
+        if (activeHosts.isEmpty()) {
             jsonPayload = getTopologyJsonPayload(host.getHostAddress());
         } else {
             try {
@@ -209,7 +209,7 @@ public abstract class AbstractTokenMapSupplier implements TokenMapSupplier {
     // package-private for Test
     List<HostToken> parseTokenListFromJson(String json) {
 
-        List<HostToken> hostTokens = new ArrayList<HostToken>();
+        List<HostToken> hostTokens = new ArrayList<>();
 
         JSONParser parser = new JSONParser();
         try {

@@ -57,7 +57,7 @@ public class UnitTestConnectionPoolForCompression implements ConnectionPool<Jedi
 
         this.config = config;
         this.opMonitor = opMonitor;
-        this.redis_data = new HashMap<String, String>();
+        this.redis_data = new HashMap<>();
         when(client.set(anyString(), anyString())).thenAnswer(new Answer<String>() {
             @Override
             public String answer(InvocationOnMock invocation) throws Throwable {
@@ -106,7 +106,7 @@ public class UnitTestConnectionPoolForCompression implements ConnectionPool<Jedi
                 // Get the keys passed
                 Object[] keys = invocation.getArguments();
 
-                List<String> values = new ArrayList<String>(10);
+                List<String> values = new ArrayList<>(10);
                 for (int i = 0; i < keys.length; i++) {
                     // get the ith key, find the value in redis_data
                     // if found, return that else return nil
@@ -174,7 +174,7 @@ public class UnitTestConnectionPoolForCompression implements ConnectionPool<Jedi
             } else {
                 opMonitor.recordSuccess(op.getName());
             }
-            return new OperationResultImpl<R>("Test", r, null);
+            return new OperationResultImpl<>("Test", r, null);
         } finally {
             context.reset();
         }

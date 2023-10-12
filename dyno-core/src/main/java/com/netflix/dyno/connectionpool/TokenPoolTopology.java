@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 public class TokenPoolTopology {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(TokenPoolTopology.class);
 
-    private final ConcurrentHashMap<String, List<TokenStatus>> map = new ConcurrentHashMap<String, List<TokenStatus>>();
-    private final ConcurrentHashMap<String, Map<Long, Host>> rackTokenHostMap = new ConcurrentHashMap<String, Map<Long, Host>>();
+    private final ConcurrentHashMap<String, List<TokenStatus>> map = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Map<Long, Host>> rackTokenHostMap = new ConcurrentHashMap<>();
     private final int replicationFactor;
 
     public TokenPoolTopology(int replicationFactor) {
@@ -38,7 +38,7 @@ public class TokenPoolTopology {
 
         List<TokenStatus> list = map.get(rack);
         if (list == null) {
-            list = new ArrayList<TokenStatus>();
+            list = new ArrayList<>();
             map.put(rack, list);
         }
 
@@ -74,7 +74,7 @@ public class TokenPoolTopology {
     }
 
     public String getRandomRack() {
-        List<String> racks = new ArrayList<String>(rackTokenHostMap.keySet());
+        List<String> racks = new ArrayList<>(rackTokenHostMap.keySet());
         Collections.shuffle(racks);
         return racks.get(0);
     }
@@ -97,14 +97,14 @@ public class TokenPoolTopology {
 
     public String toString() {
 
-        ArrayList<String> keyList = new ArrayList<String>(map.keySet());
+        ArrayList<String> keyList = new ArrayList<>(map.keySet());
         Collections.sort(keyList);
 
         StringBuilder sb = new StringBuilder();
         sb.append("TokenPoolTopology\n");
 
         for (String key : keyList) {
-            sb.append("\nRack: " + key + "\n");
+            sb.append("\nRack: ").append(key).append("\n");
             List<TokenStatus> list = map.get(key);
             Collections.sort(list);
             for (TokenStatus token : list) {
@@ -115,7 +115,7 @@ public class TokenPoolTopology {
         return sb.toString();
     }
 
-    public static class TokenStatus implements Comparable<TokenStatus> {
+    public static final class TokenStatus implements Comparable<TokenStatus> {
 
         private Long token;
         private HostConnectionPool<?> hostPool;

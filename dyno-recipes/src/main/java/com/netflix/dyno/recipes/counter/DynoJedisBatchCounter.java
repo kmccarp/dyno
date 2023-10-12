@@ -37,7 +37,7 @@ public class DynoJedisBatchCounter implements DynoCounter {
 
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicLong localCounter;
-    private final AtomicReference<DynoJedisCounter> counter = new AtomicReference<DynoJedisCounter>(null);
+    private final AtomicReference<DynoJedisCounter> counter = new AtomicReference<>(null);
     private final Long frequencyInMillis;
 
     private final ScheduledExecutorService counterThreadPool = Executors.newScheduledThreadPool(1, new ThreadFactory() {
