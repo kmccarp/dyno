@@ -133,7 +133,7 @@ public class CompressionTest {
 
     @Test
     public void testDynoJedis_Hmset_AboveCompressionThreshold() throws IOException {
-        final Map<String, String> map = new HashMap<String, String>();
+        final Map<String, String> map = new HashMap<>();
         map.put(KEY_1KB, VALUE_1KB);
         map.put(KEY_3KB, VALUE_3KB);
 

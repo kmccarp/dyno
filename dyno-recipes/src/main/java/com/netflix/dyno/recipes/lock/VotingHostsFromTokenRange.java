@@ -25,8 +25,8 @@ public class VotingHostsFromTokenRange implements VotingHostsSelector {
     private final TokenMapSupplier tokenMapSupplier;
     private final HostSupplier hostSupplier;
     private final CircularList<Host> votingHosts = new CircularList<>(new ArrayList<>());
-    private final int MIN_VOTING_SIZE = 1;
-    private final int MAX_VOTING_SIZE = 5;
+    private static final int MIN_VOTING_SIZE = 1;
+    private static final int MAX_VOTING_SIZE = 5;
     private final int effectiveVotingSize;
     private final AtomicInteger calculatedVotingSize = new AtomicInteger(0);
 
@@ -78,7 +78,7 @@ public class VotingHostsFromTokenRange implements VotingHostsSelector {
                         temp.sort(HostToken::compareTo);
                         return temp.subList(0, numHosts.get(e.getKey())).stream();
                     })
-                    .map(ht -> ht.getHost())
+                    .map(HostToken::getHost)
                     .collect(Collectors.toList());
             votingHosts.swapWithList(finalVotingHosts);
         }

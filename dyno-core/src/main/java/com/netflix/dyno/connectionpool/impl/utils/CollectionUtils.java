@@ -44,7 +44,7 @@ public class CollectionUtils {
 
     public static <X, Y> Collection<Y> transform(Collection<X> from, Transform<X, Y> transform) {
 
-        List<Y> list = new ArrayList<Y>();
+        List<Y> list = new ArrayList<>();
         for (X x : from) {
             Y y = transform.get(x);
             list.add(y);
@@ -54,7 +54,7 @@ public class CollectionUtils {
 
     public static <X> Collection<X> filter(Collection<X> from, Predicate<X> predicate) {
 
-        List<X> list = new ArrayList<X>();
+        List<X> list = new ArrayList<>();
         for (X x : from) {
             if (predicate.apply(x)) {
                 list.add(x);
@@ -76,7 +76,7 @@ public class CollectionUtils {
 
     public static <X, Y> Map<X, Y> filterKeys(Map<X, Y> from, Predicate<X> predicate) {
 
-        Map<X, Y> toMap = new HashMap<X, Y>();
+        Map<X, Y> toMap = new HashMap<>();
         for (X x : from.keySet()) {
             if (predicate.apply(x)) {
                 toMap.put(x, from.get(x));
@@ -96,14 +96,14 @@ public class CollectionUtils {
 
     public static <X, Y, Z> Map<X, Z> transform(Map<X, Y> from, MapEntryTransform<X, Y, Z> transform) {
 
-        Map<X, Z> toMap = new HashMap<X, Z>();
+        Map<X, Z> toMap = new HashMap<>();
         transform(from, toMap, transform);
         return toMap;
     }
 
     public static <X, Y, Z> Map<Y, Z> transformMapKeys(Map<X, Z> from, Transform<X, Y> transform) {
 
-        Map<Y, Z> toMap = new HashMap<Y, Z>();
+        Map<Y, Z> toMap = new HashMap<>();
         for (X x : from.keySet()) {
             Z z = from.get(x);
             if (z != null) {
@@ -116,7 +116,7 @@ public class CollectionUtils {
 
     public static <X, Y> MapDifference<X, Y> difference(Map<X, Y> left, Map<X, Y> right) {
 
-        MapDifference<X, Y> diff = new MapDifference<X, Y>();
+        MapDifference<X, Y> diff = new MapDifference<>();
 
         for (X keyInLeft : left.keySet()) {
 
@@ -135,8 +135,8 @@ public class CollectionUtils {
 
     public static class MapDifference<X, Y> {
 
-        private Map<X, Y> leftOnly = new HashMap<X, Y>();
-        private Map<X, Y> rightOnly = new HashMap<X, Y>();
+        private Map<X, Y> leftOnly = new HashMap<>();
+        private Map<X, Y> rightOnly = new HashMap<>();
 
         public Map<X, Y> entriesOnlyOnLeft() {
             return leftOnly;

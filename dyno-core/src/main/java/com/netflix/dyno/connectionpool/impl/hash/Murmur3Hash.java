@@ -59,6 +59,7 @@ public class Murmur3Hash {
                 k1 = (k1 << 15) | (k1 >>> 17);  // ROTL32(k1,15);
                 k1 *= c2;
                 h1 ^= k1;
+                break;
             default:
         }
 

@@ -42,8 +42,8 @@ public class RedissonDemo {
     private final ExecutorService threadPool;
     private final AtomicBoolean stop;
 
-    RedisClient client = null;
-    RedisAsyncConnection<String, String> rConn = null;
+    RedisClient client;
+    RedisAsyncConnection<String, String> rConn;
 
     RedissonDemo(int nThreads, int eLoop) {
         numThreads = nThreads;
@@ -86,7 +86,7 @@ public class RedissonDemo {
             final AtomicInteger total = new AtomicInteger(0);
             final AtomicInteger prev = new AtomicInteger(0);
 
-            final List<String> list = new ArrayList<String>();
+            final List<String> list = new ArrayList<>();
             for (int i = 0; i < 10000; i++) {
                 list.add("T" + i);
             }

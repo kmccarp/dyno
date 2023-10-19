@@ -196,7 +196,7 @@ public class HostSelectionWithFallback<CL> {
         HostConnectionPool<CL> hostPool;
         try {
             if (!localSelector.isEmpty()) {
-                hostPool = (op != null) ? localSelector.getPoolForOperation(op, cpConfig.getHashtag()) : localSelector.getPoolForToken(token);
+                hostPool = op != null ? localSelector.getPoolForOperation(op, cpConfig.getHashtag()) : localSelector.getPoolForToken(token);
                 if (isConnectionPoolActive(hostPool)) {
                     return hostPool;
                 }
@@ -211,7 +211,7 @@ public class HostSelectionWithFallback<CL> {
 
     private boolean attemptFallback() {
         return cpConfig.getMaxFailoverCount() > 0 &&
-                (cpConfig.localZoneAffinity() && remoteRackNames.getEntireList().size() > 0) ||
+                (cpConfig.localZoneAffinity() && !remoteRackNames.getEntireList().isEmpty()) ||
                 (!cpConfig.localZoneAffinity() && !localSelector.isEmpty());
     }
 
@@ -225,7 +225,7 @@ public class HostSelectionWithFallback<CL> {
 
         DynoException lastEx = null;
 
-        while ((numTries > 0)) {
+        while (numTries > 0) {
 
             numTries--;
             String remoteRack = remoteRackNames.getNextElement();
@@ -234,7 +234,7 @@ public class HostSelectionWithFallback<CL> {
             try {
 
                 HostConnectionPool<CL> fallbackHostPool =
-                        (op != null) ? remoteRackSelector.getPoolForOperation(op, cpConfig.getHashtag()) : remoteRackSelector.getPoolForToken(token);
+                        op != null ? remoteRackSelector.getPoolForOperation(op, cpConfig.getHashtag()) : remoteRackSelector.getPoolForToken(token);
 
                 if (isConnectionPoolActive(fallbackHostPool)) {
                     return fallbackHostPool;
@@ -270,8 +270,9 @@ public class HostSelectionWithFallback<CL> {
                 // This is valid in case of an iterator based query like scan.
                 // Try to use that same rack if it is specified.
                 String rack = null;
-                if (tokenRackMapper != null)
+                if (tokenRackMapper != null) {
                     rack = tokenRackMapper.getRackForToken(token);
+                }
                 if (rack != null) {
                     connections.add(getConnectionForTokenOnRackNoFallback(null, token, rack, duration, unit, new RunOnce()));
                 } else {
@@ -314,8 +315,7 @@ public class HostSelectionWithFallback<CL> {
             return localSelector;
         }
 
-        HostSelectionStrategy<CL> remoteSelector = remoteRackSelectors.get(rack);
-        return remoteSelector;
+        return remoteRackSelectors.get(rack);
     }
 
     private boolean isConnectionPoolActive(HostConnectionPool<CL> hPool) {
@@ -328,8 +328,7 @@ public class HostSelectionWithFallback<CL> {
 
     private Map<HostToken, HostConnectionPool<CL>> getHostPoolsForRack(final Map<HostToken, HostConnectionPool<CL>> map, final String rack) {
 
-        Map<HostToken, HostConnectionPool<CL>> dcPools =
-                CollectionUtils.filterKeys(map, new Predicate<HostToken>() {
+        return CollectionUtils.filterKeys(map, new Predicate<HostToken>() {
 
                     @Override
                     public boolean apply(HostToken x) {
@@ -339,7 +338,6 @@ public class HostSelectionWithFallback<CL> {
                         return rack.equals(x.getHost().getRack());
                     }
                 });
-        return dcPools;
     }
 
     /**
@@ -353,7 +351,7 @@ public class HostSelectionWithFallback<CL> {
         // Get the list of tokens for these hosts
         //tokenSupplier.initWithHosts(hPools.keySet());
         List<HostToken> allHostTokens = tokenSupplier.getTokens(hPools.keySet());
-        Map<HostToken, HostConnectionPool<CL>> tokenPoolMap = new HashMap<HostToken, HostConnectionPool<CL>>();
+        Map<HostToken, HostConnectionPool<CL>> tokenPoolMap = new HashMap<>();
 
         // Update inner state with the host tokens.
         for (HostToken hToken : allHostTokens) {
@@ -369,7 +367,7 @@ public class HostSelectionWithFallback<CL> {
         }
 
         // Initialize Remote selectors
-        Set<String> remoteRacks = hPools.keySet().stream().map(h -> h.getRack()).filter(rack -> rack != null && !rack.equals(localRack)).collect(Collectors.toSet());
+        Set<String> remoteRacks = hPools.keySet().stream().map(Host::getRack).filter(rack -> rack != null && !rack.equals(localRack)).collect(Collectors.toSet());
 
         for (String rack : remoteRacks) {
             Map<HostToken, HostConnectionPool<CL>> dcPools = getHostPoolsForRack(tokenPoolMap, rack);
@@ -421,7 +419,7 @@ public class HostSelectionWithFallback<CL> {
         }
     }
 
-    private class DefaultSelectionFactory implements HostSelectionStrategyFactory<CL> {
+    private final class DefaultSelectionFactory implements HostSelectionStrategyFactory<CL> {
 
         private final LoadBalancingStrategy lbStrategy;
         private final HashPartitioner hashPartitioner;
@@ -436,7 +434,7 @@ public class HostSelectionWithFallback<CL> {
 
             switch (lbStrategy) {
                 case RoundRobin:
-                    return new RoundRobinSelection<CL>();
+                    return new RoundRobinSelection<>();
                 case TokenAware:
                     return hashPartitioner != null
                             ? new TokenAwareSelection<CL>(hashPartitioner)

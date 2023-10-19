@@ -47,7 +47,7 @@ public class TokenAwareSelection<CL> implements HostSelectionStrategy<CL> {
 
     private final BinarySearchTokenMapper tokenMapper;
 
-    private final ConcurrentHashMap<Long, HostConnectionPool<CL>> tokenPools = new ConcurrentHashMap<Long, HostConnectionPool<CL>>();
+    private final ConcurrentHashMap<Long, HostConnectionPool<CL>> tokenPools = new ConcurrentHashMap<>();
 
     public TokenAwareSelection() {
 
@@ -132,7 +132,7 @@ public class TokenAwareSelection<CL> implements HostSelectionStrategy<CL> {
 
     @Override
     public List<HostConnectionPool<CL>> getOrderedHostPools() {
-        return new ArrayList<HostConnectionPool<CL>>(tokenPools.values());
+        return new ArrayList<>(tokenPools.values());
     }
 
     @Override
@@ -191,8 +191,7 @@ public class TokenAwareSelection<CL> implements HostSelectionStrategy<CL> {
     }
 
     public Long getKeyHash(String key) {
-        Long keyHash = tokenMapper.hash(key);
-        return keyHash;
+        return tokenMapper.hash(key);
     }
 
     @Override

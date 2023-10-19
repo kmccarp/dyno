@@ -39,8 +39,8 @@ public class BinarySearchTokenMapper implements HashPartitioner {
 
     private final HashPartitioner partitioner;
 
-    private final AtomicReference<DynoBinarySearch<Long>> binarySearch = new AtomicReference<DynoBinarySearch<Long>>(null);
-    private final ConcurrentHashMap<Long, HostToken> tokenMap = new ConcurrentHashMap<Long, HostToken>();
+    private final AtomicReference<DynoBinarySearch<Long>> binarySearch = new AtomicReference<>(null);
+    private final ConcurrentHashMap<Long, HostToken> tokenMap = new ConcurrentHashMap<>();
 
     public BinarySearchTokenMapper(HashPartitioner p) {
         this.partitioner = p;
@@ -116,9 +116,9 @@ public class BinarySearchTokenMapper implements HashPartitioner {
     }
 
     private void initBinarySearch() {
-        List<Long> tokens = new ArrayList<Long>(tokenMap.keySet());
+        List<Long> tokens = new ArrayList<>(tokenMap.keySet());
         Collections.sort(tokens);
-        binarySearch.set(new DynoBinarySearch<Long>(tokens));
+        binarySearch.set(new DynoBinarySearch<>(tokens));
     }
 
     public boolean isEmpty() {

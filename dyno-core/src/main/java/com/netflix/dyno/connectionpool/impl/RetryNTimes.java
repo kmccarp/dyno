@@ -29,7 +29,7 @@ import com.netflix.dyno.connectionpool.RetryPolicy;
  */
 public class RetryNTimes implements RetryPolicy {
 
-    private int n;
+    private final int n;
     private final AtomicReference<RetryState> state = new AtomicReference<>(new RetryState(0, false));
     private final boolean allowCrossZoneFallback;
 

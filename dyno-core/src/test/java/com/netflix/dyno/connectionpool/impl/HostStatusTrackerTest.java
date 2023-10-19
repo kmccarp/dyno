@@ -132,7 +132,7 @@ public class HostStatusTrackerTest {
 
     private Set<Host> getHostSet(String... names) {
 
-        Set<Host> set = new HashSet<Host>();
+        Set<Host> set = new HashSet<>();
         if (names != null && names.length > 0) {
             for (String name : names) {
                 if (!name.isEmpty()) {
@@ -145,7 +145,7 @@ public class HostStatusTrackerTest {
 
     private void verifySet(Collection<Host> hosts, String... names) {
 
-        Set<String> expected = new HashSet<String>();
+        Set<String> expected = new HashSet<>();
         if (names != null && names.length > 0) {
             for (String n : names) {
                 if (n != null && !n.isEmpty()) {
@@ -154,7 +154,7 @@ public class HostStatusTrackerTest {
             }
         }
 
-        Set<String> result = new HashSet<String>(CollectionUtils.transform(hosts, new Transform<Host, String>() {
+        Set<String> result = new HashSet<>(CollectionUtils.transform(hosts, new Transform<Host, String>() {
 
             @Override
             public String get(Host x) {

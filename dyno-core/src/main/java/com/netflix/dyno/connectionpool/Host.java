@@ -51,7 +51,7 @@ public class Host implements Comparable<Host> {
     private final String password;
 
     public enum Status {
-        Up, Down;
+        Up, Down
     }
 
     public Host(String hostname, String ipAddress, int port, int securePort, int datastorePort, String rack, String datacenter, Status status, String hashtag, String password) {
@@ -147,28 +147,31 @@ public class Host implements Comparable<Host> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
-        result = prime * result + ((rack == null) ? 0 : rack.hashCode());
+        result = prime * result + (hostname == null ? 0 : hostname.hashCode());
+        result = prime * result + (rack == null ? 0 : rack.hashCode());
 
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
+        }
 
-        if (getClass() != obj.getClass())
+        if (getClass() != obj.getClass()) {
             return false;
+        }
 
         Host other = (Host) obj;
 
         boolean equals = true;
 
-        equals &= (hostname != null) ? hostname.equals(other.hostname) : other.hostname == null;
-        equals &= (rack != null) ? rack.equals(other.rack) : other.rack == null;
+        equals &= hostname != null ? hostname.equals(other.hostname) : other.hostname == null;
+        equals &= rack != null ? rack.equals(other.rack) : other.rack == null;
 
         return equals;
     }

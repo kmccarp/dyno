@@ -41,8 +41,8 @@ import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils.Predicate;
 
 public class CircularListTest {
 
-    private static final List<Integer> iList = new ArrayList<Integer>();
-    private static final CircularList<Integer> cList = new CircularList<Integer>(iList);
+    private static final List<Integer> iList = new ArrayList<>();
+    private static final CircularList<Integer> cList = new CircularList<>(iList);
     private static final Integer size = 10;
 
     private static ExecutorService threadPool;
@@ -105,7 +105,7 @@ public class CircularListTest {
 
         Thread.sleep(500);
 
-        List<Integer> newList = new ArrayList<Integer>();
+        List<Integer> newList = new ArrayList<>();
         newList.addAll(iList);
         for (int i = 10; i < 15; i++) {
             newList.add(i);
@@ -127,11 +127,11 @@ public class CircularListTest {
             }
         });
 
-        List<Integer> list = new ArrayList<Integer>(subMap.values());
+        List<Integer> list = new ArrayList<>(subMap.values());
         checkValues(list);
 
         subMap = CollectionUtils.difference(result, subMap).entriesOnlyOnLeft();
-        list = new ArrayList<Integer>(subMap.values());
+        list = new ArrayList<>(subMap.values());
         checkValues(list);
     }
 
@@ -158,10 +158,10 @@ public class CircularListTest {
 
         Thread.sleep(200);
 
-        List<Integer> newList = new ArrayList<Integer>();
+        List<Integer> newList = new ArrayList<>();
         newList.addAll(iList);
 
-        final List<Integer> removedElements = new ArrayList<Integer>();
+        final List<Integer> removedElements = new ArrayList<>();
         removedElements.add(newList.remove(2));
         removedElements.add(newList.remove(5));
         removedElements.add(newList.remove(6));
@@ -180,7 +180,7 @@ public class CircularListTest {
             }
         });
 
-        checkValues(new ArrayList<Integer>(subMap.values()));
+        checkValues(new ArrayList<>(subMap.values()));
     }
 
     @Test
@@ -188,7 +188,7 @@ public class CircularListTest {
 
         final AtomicBoolean stop = new AtomicBoolean(false);
         final CyclicBarrier barrier = new CyclicBarrier(5);
-        final List<Future<Map<Integer, Integer>>> futures = new ArrayList<Future<Map<Integer, Integer>>>();
+        final List<Future<Map<Integer, Integer>>> futures = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
             futures.add(threadPool.submit(new Callable<Map<Integer, Integer>>() {
@@ -213,7 +213,7 @@ public class CircularListTest {
         stop.set(true);
 
         Map<Integer, Integer> totalMap = getTotalMap(futures);
-        checkValues(new ArrayList<Integer>(totalMap.values()));
+        checkValues(new ArrayList<>(totalMap.values()));
     }
 
 
@@ -222,7 +222,7 @@ public class CircularListTest {
 
         final AtomicBoolean stop = new AtomicBoolean(false);
         final CyclicBarrier barrier = new CyclicBarrier(5);
-        final List<Future<Map<Integer, Integer>>> futures = new ArrayList<Future<Map<Integer, Integer>>>();
+        final List<Future<Map<Integer, Integer>>> futures = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
             futures.add(threadPool.submit(new Callable<Map<Integer, Integer>>() {
@@ -245,7 +245,7 @@ public class CircularListTest {
 
         Thread.sleep(200);
 
-        List<Integer> newList = new ArrayList<Integer>(iList);
+        List<Integer> newList = new ArrayList<>(iList);
         for (int i = 10; i < 15; i++) {
             newList.add(i);
         }
@@ -264,10 +264,10 @@ public class CircularListTest {
             }
         });
 
-        checkValues(new ArrayList<Integer>(subMap.values()));
+        checkValues(new ArrayList<>(subMap.values()));
 
         subMap = CollectionUtils.difference(result, subMap).entriesOnlyOnLeft();
-        checkValues(new ArrayList<Integer>(subMap.values()));
+        checkValues(new ArrayList<>(subMap.values()));
     }
 
     @Test
@@ -275,7 +275,7 @@ public class CircularListTest {
 
         final AtomicBoolean stop = new AtomicBoolean(false);
         final CyclicBarrier barrier = new CyclicBarrier(5);
-        final List<Future<Map<Integer, Integer>>> futures = new ArrayList<Future<Map<Integer, Integer>>>();
+        final List<Future<Map<Integer, Integer>>> futures = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
             futures.add(threadPool.submit(new Callable<Map<Integer, Integer>>() {
@@ -298,9 +298,9 @@ public class CircularListTest {
 
         Thread.sleep(200);
 
-        List<Integer> newList = new ArrayList<Integer>(iList);
+        List<Integer> newList = new ArrayList<>(iList);
 
-        final List<Integer> removedElements = new ArrayList<Integer>();
+        final List<Integer> removedElements = new ArrayList<>();
         removedElements.add(newList.remove(2));
         removedElements.add(newList.remove(5));
         removedElements.add(newList.remove(6));
@@ -320,7 +320,7 @@ public class CircularListTest {
             }
         });
 
-        checkValues(new ArrayList<Integer>(subMap.values()));
+        checkValues(new ArrayList<>(subMap.values()));
     }
 
     @Test
@@ -333,7 +333,7 @@ public class CircularListTest {
 
     private class TestWorker {
 
-        private final ConcurrentHashMap<Integer, Integer> map = new ConcurrentHashMap<Integer, Integer>();
+        private final ConcurrentHashMap<Integer, Integer> map = new ConcurrentHashMap<>();
 
         private void process() {
 
@@ -349,7 +349,7 @@ public class CircularListTest {
 
     private static Map<Integer, Integer> getTotalMap(List<Future<Map<Integer, Integer>>> futures) throws InterruptedException, ExecutionException {
 
-        Map<Integer, Integer> totalMap = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> totalMap = new HashMap<>();
 
         for (Future<Map<Integer, Integer>> f : futures) {
 
@@ -379,7 +379,7 @@ public class CircularListTest {
         double mean = ss.getMean();
         double stddev = ss.getStandardDeviation();
 
-        double p = ((stddev * 100) / mean);
+        double p = (stddev * 100) / mean;
         System.out.println("Percentage diff: " + p);
 
         Assert.assertTrue("" + p + " " + values, p < 0.1);

@@ -26,7 +26,7 @@ import com.netflix.dyno.connectionpool.impl.utils.CollectionUtils;
  *
  * @author poberai
  */
-public class MonitorConsole implements MonitorConsoleMBean {
+public final class MonitorConsole implements MonitorConsoleMBean {
 
     private static final MonitorConsole Instance = new MonitorConsole();
 
@@ -36,8 +36,8 @@ public class MonitorConsole implements MonitorConsoleMBean {
         return Instance;
     }
 
-    private final ConcurrentHashMap<String, ConnectionPoolMonitor> cpMonitors = new ConcurrentHashMap<String, ConnectionPoolMonitor>();
-    private final ConcurrentHashMap<String, ConnectionPoolImpl<?>> connectionPools = new ConcurrentHashMap<String, ConnectionPoolImpl<?>>();
+    private final ConcurrentHashMap<String, ConnectionPoolMonitor> cpMonitors = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ConnectionPoolImpl<?>> connectionPools = new ConcurrentHashMap<>();
 
     private MonitorConsole() {
 
@@ -105,14 +105,14 @@ public class MonitorConsole implements MonitorConsoleMBean {
             }
 
             HostConnectionStats hStats = hostStats.get(host);
-            sb.append("\nHost: " + host.getHostAddress() + ":" + host.getPort() + ":" + host.getRack() + "\t");
-            sb.append(" borrowed: " + hStats.getConnectionsBorrowed());
-            sb.append(" returned: " + hStats.getConnectionsReturned());
-            sb.append(" created: " + hStats.getConnectionsCreated());
-            sb.append(" closed: " + hStats.getConnectionsClosed());
-            sb.append(" createFailed: " + hStats.getConnectionsCreateFailed());
-            sb.append(" errors: " + hStats.getOperationErrorCount());
-            sb.append(" success: " + hStats.getOperationSuccessCount());
+            sb.append("\nHost: ").append(host.getHostAddress()).append(":").append(host.getPort()).append(":").append(host.getRack()).append("\t");
+            sb.append(" borrowed: ").append(hStats.getConnectionsBorrowed());
+            sb.append(" returned: ").append(hStats.getConnectionsReturned());
+            sb.append(" created: ").append(hStats.getConnectionsCreated());
+            sb.append(" closed: ").append(hStats.getConnectionsClosed());
+            sb.append(" createFailed: ").append(hStats.getConnectionsCreateFailed());
+            sb.append(" errors: ").append(hStats.getOperationErrorCount());
+            sb.append(" success: ").append(hStats.getOperationSuccessCount());
         }
         sb.append("\n");
 
@@ -121,13 +121,13 @@ public class MonitorConsole implements MonitorConsoleMBean {
 
     public TokenPoolTopology getTopology(String cpName) {
         ConnectionPoolImpl<?> pool = connectionPools.get(cpName);
-        return (pool != null) ? pool.getTopology() : null;
+        return pool != null ? pool.getTopology() : null;
     }
 
     @Override
     public Map<String, Map<String, List<String>>> getTopologySnapshot(String cpName) {
         Map<String, Map<String, List<String>>> snapshot =
-                new HashMap<String, Map<String, List<String>>>();
+                new HashMap<>();
 
         TokenPoolTopology topology = getTopology(cpName);
 
@@ -178,7 +178,7 @@ public class MonitorConsole implements MonitorConsoleMBean {
     }
 
     private Map<String, List<String>> getTokenStatusMap(List<TokenPoolTopology.TokenStatus> tokens) {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
         for (TokenPoolTopology.TokenStatus tokenStatus : tokens) {
             String token = tokenStatus.getToken().toString();
             HostConnectionPool<?> hostPool = tokenStatus.getHostPool();
